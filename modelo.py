@@ -8,6 +8,7 @@ import os
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.io as sio
 
 # Clase para crear pacientes 
 class Paciente:  
@@ -56,6 +57,17 @@ class Paciente:
         return self.__urlSeñal
     def ver_urlT(self):
         return self.__urlTablas
+    
+    def leerSeñal(self):
+        mat_contents = sio.loadmat(self.__urlSeñal) #loading data
+        print("the loaded keys are: " + str(mat_contents.keys())); #the data is loaded as a Python dictionary   
+        data = mat_contents['data']   #Se usa solo para archivo señal potencial 
+        c,p,e=np.shape(data)      #asigancion de varibles a los valores de shep
+        self.__señal_continua= np.reshape(data,(c, p*e),order ='F') # matriz  en 2D
+    def verSeñal(self):
+        return self.__señal_continua
+    def asiganrSeñal(self,señal):
+        self.__señal_continua=señal
 
 class sistema: 
     def __init__(self, nombre_db):  # Se establece como atributos el nombre de la base de datos, la conexión con la base y el cursor 
@@ -167,6 +179,20 @@ class sistema:
         plt.title('Imagen con células etiquetadas')
         plt.axis('off')
         plt.show()
+    
+    #Metodo para generar la señal 
+    def graficas_señal(self, cedula ):
+        if not self.conexion:
+            print("No hay conexión a la base de datos")
+            return
+        
+        self.cursor = self.conexion.cursor() # Se inicializa el cursor
+        query_url = "SELECT url_imagen FROM Paciente WHERE id = ?"
+        self.cursor.execute(query_url, (cedula,))
+        result = self.cursor.fetchone()
+
+        
+        
 
 
 sis = sistema('app.db')

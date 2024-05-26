@@ -51,9 +51,10 @@ class Vista(QDialog):
         self.setup()
 
     def setup(self):
-        self.boton_agregar.clicked.connect(self.load)
+        self.boton_agregar.clicked.connect(self.open)
+        self.boton_salir.clicked.connect(self.close)
 
-    def load(self):
+    def open(self):
         self.hide()
         self.newWindow = VistaVerDatos()
         self.newWindow.setCoordinador(self.__coordinador2)
@@ -61,6 +62,12 @@ class Vista(QDialog):
 
     def setCoordinador(self, c):
         self.__coordinador2 = c
+
+    def close (self):
+        self.hide()
+        self.lastWindow = Ventanainicio()
+        self.lastWindow.setCoordinador(self.__coordinador2)
+        self.lastWindow.show()
 
 class VistaVerDatos(QDialog):
     def __init__(self):

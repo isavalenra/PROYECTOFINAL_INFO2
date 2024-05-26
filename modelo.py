@@ -5,10 +5,13 @@ from PyQt5.QtCore import QPoint, Qt, QByteArray, QIODevice, QBuffer
 import sqlite3
 from PyQt5.QtCore import QObject
 import os
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
-# Establecer base de datos, hacer conexion y desconexion 
-class Paciente():    # Clase para crear pacientes 
-    def __init__(self):   #se crean todos los atributos relacionados con el paciente
+# Clase para crear pacientes 
+class Paciente:  
+    def __init__(self):  # Se crean todos los atributos relacionados con el paciente
         self.__nombre = ""
         self.__cedula = None
         self.__edad = None
@@ -18,7 +21,7 @@ class Paciente():    # Clase para crear pacientes
         self.__urlSeñal = ""
         self.__urlTablas = ""
     
-    # Metodos asignar 
+    # Métodos asignar 
     def asignar_nombre(self, nombre):
         self.__nombre = nombre
     def asignar_cedula(self, id):
@@ -36,7 +39,7 @@ class Paciente():    # Clase para crear pacientes
     def asignar_urlT(self, urlT):
         self.__urlTablas = urlT
 
-    # Metodos ver
+    # Métodos ver
     def ver_nombre(self):
         return self.__nombre
     def ver_cedula(self):
@@ -54,18 +57,32 @@ class Paciente():    # Clase para crear pacientes
     def ver_urlT(self):
         return self.__urlTablas
 
-class sistema(): 
-    def __init__(self,nombre_db):   #Se esatblece como atributos el nombre de la base de datos, las conexion con la base  y el cursor 
+class sistema: 
+    def __init__(self, nombre_db):  # Se establece como atributos el nombre de la base de datos, la conexión con la base y el cursor 
         self.nombre_db = nombre_db
-        self.conexion =sqlite3.connect(self.nombre_db)
-        self.cursor =self.conexion.cursor()
+        self.conexion = sqlite3.connect(self.nombre_db)
+        self.cursor = self.conexion.cursor()
 
-    # Metodo asignar a paciente en base de datos 
-    def asignar_paciente(self,n,c,ed,pe,es,i,s,t):  #Seestablecen esto parametros qeu vendran ligados con el controlador y la vista 
-        if not self.conexion:  #Verificar inicialmente si se conecto correctamente a la base de datos 
-            print("No hay conexion a la base de datos")
+        # Crear la tabla Paciente si no existe
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS Paciente (
+            nombre TEXT, 
+            id INTEGER PRIMARY KEY, 
+            edad INTEGER, 
+            peso REAL, 
+            estatura REAL, 
+            url_imagen TEXT, 
+            url_señal TEXT, 
+            url_tablas TEXT)''')
+        self.conexion.commit()
+        self.cursor.close()
+
+    # Método asignar a paciente en base de datos 
+    def asignar_paciente(self, n, c, ed, pe, es, i, s, t):  # Se establecen estos parámetros que vendrán ligados con el controlador y la vista 
+        self.cursor = self.conexion.cursor()
+        if not self.conexion:  # Verificar inicialmente si se conectó correctamente a la base de datos 
+            print("No hay conexión a la base de datos")
             return 
-        p=Paciente()   #Se crea obejto paciente para luego usar los metodos de asiganacion de atributos 
+        p = Paciente()  # Se crea objeto paciente para luego usar los métodos de asignación de atributos 
         p.asignar_nombre(n)
         p.asignar_cedula(c)
         p.asignar_edad(ed)
@@ -75,24 +92,83 @@ class sistema():
         p.asignar_urlS(s)
         p.asignar_urlT(t)
         
-
-        query_check = "SELECT * FROM Paciente WHERE ID = ?"  #Se identifica el parametro por el cual se va a bucar el paciente 
-        self.cursor.execute(query_check, (p.ver_cedula(),))   #Se usa el metod ver_cedula de la clase paciente para verificar si el paciente que se quiere ingresar aun no esta en la base de datos 
-        if self.cursor.fetchone() is None:  #si no se encuentra enotonce se usa condiconal para agregar paciente 
+        query_check = "SELECT * FROM Paciente WHERE id = ?"  # Se identifica el parámetro por el cual se va a buscar el paciente 
+        self.cursor.execute(query_check, (p.ver_cedula(),))  # Se usa el método ver_cedula de la clase paciente para verificar si el paciente que se quiere ingresar aún no está en la base de datos
+        if self.cursor.fetchone() is None:  # Si no se encuentra entonces se usa condicional para agregar paciente 
             query_insert = '''                
             INSERT INTO Paciente (nombre, id, edad, peso, estatura, url_imagen, url_señal, url_tablas)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            '''   #Se hace el la identificacion de parametros en la tabla de la base de datos Paciente 
-            parametros = (p.ver_nombre(),p.ver_cedula(),p.ver_edad(),p.ver_peso(),p.ver_estatura(),p.ver_urlI(),p.ver_urlS(),p.ver_urlT())
-            self.cursor.execute(query_insert, parametros)  #se relaciona el query_insert con la tupla de parametros del paciente
+            '''  # Se hace la identificación de parámetros en la tabla de la base de datos Paciente 
+            parametros = (p.ver_nombre(), p.ver_cedula(), p.ver_edad(), p.ver_peso(), p.ver_estatura(), p.ver_urlI(), p.ver_urlS(), p.ver_urlT())
+            self.cursor.execute(query_insert, parametros)  # Se relaciona el query_insert con la tupla de parámetros del paciente
             self.conexion.commit()
-            self.conexion.close()
-            print(f"Paciente con la cedula {p.ver_cedula()} agregado a la base de datos")   #Retono de mesaje para verificar en consola la ejecucion del codigo 
+            self.cursor.close()
+            print(f"Paciente con la cédula {p.ver_cedula()} agregado a la base de datos")  # Retorno de mensaje para verificar en consola la ejecución del código 
         else:
-            print(f"Paciente con la cedula {p.ver_cedula()} ya existe en la base de datos")
+            print(f"Paciente con la cédula {p.ver_cedula()} ya existe en la base de datos")
+            self.cursor.close()
+
+    # Método para contar células en una imagen
+    def contar_celulas(self, cedula):
+
+        if not self.conexion:
+            print("No hay conexión a la base de datos")
+            return
+        
+        self.cursor = self.conexion.cursor() # Se inicializa el cursor
+
+        # Obtener la URL de la imagen del paciente desde la base de datos
+        query_url = "SELECT url_imagen FROM Paciente WHERE id = ?"
+        self.cursor.execute(query_url, (cedula,))
+        result = self.cursor.fetchone()
+        if result is None:
+            print(f"Paciente con la cédula {cedula} no encontrado en la base de datos")
+            self.cursor.close() # Se cierra el cursor
+            return
+
+        url_imagen = result[0]
+        print(f"Ruta de la imagen: {url_imagen}")
+
+        # Cargar y procesar la imagen
+        img = cv2.imread(url_imagen)
+        if img is None:
+            print(f"No se pudo cargar la imagen en la ruta: {url_imagen}")
+            self.cursor.close() # Se cierra el cursor
+            return
+        
+        self.cursor.close() # Se cierra el cursor
+
+        plt.subplot(3, 2, 1)
+        plt.title('Imagen sin transformación')
+        plt.axis('off')
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+        # Convertir a escala de grises y aplicar umbral
+        imapB = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, imapB = cv2.threshold(imapB, 127, 255, cv2.THRESH_BINARY)
+        plt.subplot(3, 2, 2)
+        plt.title('Imagen binaria')
+        plt.axis('off')
+        plt.imshow(imapB, cmap='gray', vmin=0, vmax=255)
+        
+        # Apertura, dilatación y erosión
+        kernel = np.ones((5, 5), np.uint8)
+        imapB = cv2.morphologyEx(imapB, cv2.MORPH_OPEN, kernel) 
+        ima2 = cv2.dilate(imapB, kernel, iterations=2)
+        ima2 = cv2.erode(ima2, kernel, iterations=2)
+        num_cells, labeled_image = cv2.connectedComponents(ima2)
+
+        # Imprimir el número de células
+        print("Número de células encontradas:", num_cells - 1)  # Restamos 1 para excluir el fondo
+
+        # Graficar el resultado
+        plt.subplot(3, 2, 3)
+        plt.imshow(labeled_image, cmap='jet')  # Usamos 'jet' colormap para visualizar las etiquetas
+        plt.title('Imagen con células etiquetadas')
+        plt.axis('off')
+        plt.show()
 
 
-sis=sistema('app.db')
-sis.asignar_paciente('juan',50,19,80, 1.8,'imagen','señal','tabla')
-
-
+sis = sistema('app.db')
+sis.asignar_paciente('John', 88, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'tabla')
+sis.contar_celulas(88)

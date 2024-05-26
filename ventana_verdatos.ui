@@ -162,7 +162,7 @@
     </widget>
    </item>
    <item row="16" column="2">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="agregar_datos">
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255)</string>
      </property>
@@ -172,7 +172,7 @@
     </widget>
    </item>
    <item row="16" column="0">
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="salir_de_ventana">
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255)</string>
      </property>

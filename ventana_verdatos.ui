@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>467</width>
+    <width>709</width>
     <height>499</height>
    </rect>
   </property>
@@ -28,6 +28,13 @@
     <widget class="QLabel" name="label_5">
      <property name="text">
       <string>Altura:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Peso:</string>
      </property>
     </widget>
    </item>
@@ -53,20 +60,6 @@
      </column>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Peso:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="0">
-    <widget class="QLabel" name="label_7">
-     <property name="text">
-      <string>Promedio Temperatua :  </string>
-     </property>
-    </widget>
-   </item>
    <item row="12" column="2">
     <widget class="QLabel" name="promedio_temperatura">
      <property name="text">
@@ -81,17 +74,10 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_3">
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_7">
      <property name="text">
-      <string>ID:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Nombre: </string>
+      <string>Promedio Temperatua :  </string>
      </property>
     </widget>
    </item>
@@ -109,17 +95,17 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
-    <widget class="QLineEdit" name="ingresar_id">
-     <property name="styleSheet">
-      <string notr="true">background-color:rgb(255, 255, 255)</string>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>ID:</string>
      </property>
     </widget>
    </item>
-   <item row="13" column="2">
-    <widget class="QLabel" name="moda_oxigena">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>TextLabel</string>
+      <string>Nombre: </string>
      </property>
     </widget>
    </item>
@@ -130,20 +116,24 @@
      </property>
     </widget>
    </item>
-   <item row="14" column="2">
-    <widget class="QLabel" name="desviacion_frec">
+   <item row="13" column="2">
+    <widget class="QLabel" name="moda_oxigena">
      <property name="text">
       <string>TextLabel</string>
      </property>
     </widget>
    </item>
-   <item row="15" column="0" colspan="3">
-    <widget class="QLabel" name="label">
+   <item row="4" column="2">
+    <widget class="QLineEdit" name="ingresar_id">
      <property name="styleSheet">
-      <string notr="true"/>
+      <string notr="true">background-color:rgb(255, 255, 255)</string>
      </property>
-     <property name="text">
-      <string/>
+    </widget>
+   </item>
+   <item row="8" column="2">
+    <widget class="QLineEdit" name="ingresar_peso">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255)</string>
      </property>
     </widget>
    </item>
@@ -154,10 +144,40 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="2">
-    <widget class="QLineEdit" name="ingresar_peso">
+   <item row="14" column="2">
+    <widget class="QLabel" name="desviacion_frec">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="17" column="0" colspan="3">
+    <widget class="QLabel" name="label">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="16" column="2">
+    <widget class="QPushButton" name="agregar_datos">
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255)</string>
+     </property>
+     <property name="text">
+      <string>agregar</string>
+     </property>
+    </widget>
+   </item>
+   <item row="16" column="0">
+    <widget class="QPushButton" name="salir_de_ventana">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255)</string>
+     </property>
+     <property name="text">
+      <string>Salir</string>
      </property>
     </widget>
    </item>

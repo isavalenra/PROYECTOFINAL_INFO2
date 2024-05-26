@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsDropShadowEffect
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QPoint, Qt, QByteArray, QIODevice, QBuffer
 import sqlite3
+from PyQt5.QtCore import QObject
+import os
 
 # Establecer base de datos, hacer conexion y desconexion 
 class Paciente():    # Clase para crear pacientes 
@@ -87,8 +89,10 @@ class sistema():
             self.conexion.close()
             print(f"Paciente con la cedula {p.ver_cedula()} agregado a la base de datos")   #Retono de mesaje para verificar en consola la ejecucion del codigo 
         else:
-            print(f"Ya existe un paciente con la cedula: {p.ver_cedula()}")
-        
-#ejemplo temporal de aplicacion
+            print(f"Paciente con la cedula {p.ver_cedula()} ya existe en la base de datos")
+
+
 sis=sistema('app.db')
-sis.asignar_paciente('juan',70,19,80, 1.8,'imagen','señal','tabla')
+sis.asignar_paciente('juan',50,19,80, 1.8,'imagen','señal','tabla')
+
+

@@ -19,6 +19,9 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QPushButton" name="boton_agregar">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255)</string>
+     </property>
      <property name="text">
       <string>Agregar Paciente </string>
      </property>
@@ -26,6 +29,9 @@
    </item>
    <item row="1" column="0">
     <widget class="QPushButton" name="boton_consultar">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255)</string>
+     </property>
      <property name="text">
       <string>Consultar Paciente  </string>
      </property>
@@ -33,6 +39,9 @@
    </item>
    <item row="2" column="0">
     <widget class="QPushButton" name="boton_salir">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 255, 255)</string>
+     </property>
      <property name="text">
       <string>salir </string>
      </property>

@@ -11,16 +11,6 @@ class Coordinador(object):
     def validarusuario(self,l,p):
         return self.__mi_modelo.validaruser(l,p)
     
-    # def img_conextion(self, imagen):
-        
-    #     self.__mi_modelo.picture_creator(imagen)
-    
-    # def get_file(self,filename):
-    #     self.__mi_modelo.get_path(filename)
-    # # def listfile(self,file):
-    # #     return self.__mi_modelo.verarchivos(file)
-    # def infomartion (self, picture):
-    #     return self.__mi_modelo.obtener_informacion_paciente(picture)
 
 def main():
 
@@ -28,7 +18,6 @@ def main():
     mi_vista = Ventanainicio()
     mi_modelo = loging()
     mi_coordinador = Coordinador(mi_vista,mi_modelo)
-    # mi_coordinador = Coordinador(mi_vista, mi_modelo)
     mi_vista.setCoordinador(mi_coordinador)
     mi_vista.show()
     sys.exit(app.exec_())

@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QGraphicsDropShadowEffect
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import QPoint, Qt, QByteArray, QIODevice, QBuffer
 import sqlite3
+from PyQt5.QtCore import QObject
+import os
 
 # Establecer base de datos, hacer conexion y desconexion 
 class BaseDatos:
@@ -104,3 +106,15 @@ paciente.realizar_conexion()
 paciente.asignar_paciente()
 paciente.desconexion()
 
+class loging(QObject):
+    def __init__(self):
+        super().__init__()
+        self.__login = '' #loging 
+        self.__password = '' 
+        self.__carpeta = ""
+
+    def validaruser(self, l, p):
+        return self.__login == l and self.__password == p
+
+    def get_path(self, f): 
+        self.__carpeta = f

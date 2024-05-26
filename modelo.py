@@ -5,25 +5,8 @@ from PyQt5.QtCore import QPoint, Qt, QByteArray, QIODevice, QBuffer
 import sqlite3
 
 # Establecer base de datos, hacer conexion y desconexion 
-class BaseDatos:
-    def __init__(self, nombre_db):
-        self.nombre_db = nombre_db
-        self.conexion = None
-        self.cursor = None
-    
-    def realizar_conexion(self):  # Se realiza la conexion 
-        self.conexion = sqlite3.connect(self.nombre_db)
-        self.cursor = self.conexion.cursor()
-        print("La conexion se realizo exitosamente")
-    
-    def desconexion(self):  # Se realiza la desconexion 
-        if self.conexion:
-            self.conexion.close()
-            print(f"Se desconecto de la base de datos: {self.nombre_db}")
-
-class Paciente(BaseDatos):    # Clase para crear pacientes 
-    def __init__(self, nombre_db):
-        super().__init__(nombre_db)
+class Paciente():    # Clase para crear pacientes 
+    def __init__(self):   #se crean todos los atributos relacionados con el paciente
         self.__nombre = ""
         self.__cedula = None
         self.__edad = None
@@ -68,39 +51,44 @@ class Paciente(BaseDatos):    # Clase para crear pacientes
         return self.__urlSeñal
     def ver_urlT(self):
         return self.__urlTablas
-    
+
+class sistema(): 
+    def __init__(self,nombre_db):   #Se esatblece como atributos el nombre de la base de datos, las conexion con la base  y el cursor 
+        self.nombre_db = nombre_db
+        self.conexion =sqlite3.connect(self.nombre_db)
+        self.cursor =self.conexion.cursor()
+
     # Metodo asignar a paciente en base de datos 
-    def asignar_paciente(self):
-        if not self.conexion:
+    def asignar_paciente(self,n,c,ed,pe,es,i,s,t):  #Seestablecen esto parametros qeu vendran ligados con el controlador y la vista 
+        if not self.conexion:  #Verificar inicialmente si se conecto correctamente a la base de datos 
             print("No hay conexion a la base de datos")
             return 
+        p=Paciente()   #Se crea obejto paciente para luego usar los metodos de asiganacion de atributos 
+        p.asignar_nombre(n)
+        p.asignar_cedula(c)
+        p.asignar_edad(ed)
+        p.asignar_peso(pe)
+        p.asignar_estatura(es)
+        p.asignar_urlI(i)
+        p.asignar_urlS(s)
+        p.asignar_urlT(t)
         
-        query_check = "SELECT * FROM Paciente WHERE ID = ?"
-        self.cursor.execute(query_check, (self.__cedula,))
-        if self.cursor.fetchone() is None:
-            query_insert = '''
+
+        query_check = "SELECT * FROM Paciente WHERE ID = ?"  #Se identifica el parametro por el cual se va a bucar el paciente 
+        self.cursor.execute(query_check, (p.ver_cedula(),))   #Se usa el metod ver_cedula de la clase paciente para verificar si el paciente que se quiere ingresar aun no esta en la base de datos 
+        if self.cursor.fetchone() is None:  #si no se encuentra enotonce se usa condiconal para agregar paciente 
+            query_insert = '''                
             INSERT INTO Paciente (nombre, id, edad, peso, estatura, url_imagen, url_señal, url_tablas)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            '''
-            parametros = (self.__nombre, self.__cedula, self.__edad, self.__peso, self.__estatura, self.__urlImagen, self.__urlSeñal, self.__urlTablas)
-            self.cursor.execute(query_insert, parametros)
+            '''   #Se hace el la identificacion de parametros en la tabla de la base de datos Paciente 
+            parametros = (p.ver_nombre(),p.ver_cedula(),p.ver_edad(),p.ver_peso(),p.ver_estatura(),p.ver_urlI(),p.ver_urlS(),p.ver_urlT())
+            self.cursor.execute(query_insert, parametros)  #se relaciona el query_insert con la tupla de parametros del paciente
             self.conexion.commit()
-            print(f"Paciente con la cedula {self.__cedula} agregado a la base de datos")
+            self.conexion.close()
+            print(f"Paciente con la cedula {p.ver_cedula()} agregado a la base de datos")   #Retono de mesaje para verificar en consola la ejecucion del codigo 
         else:
-            print(f"Paciente con la cedula {self.__cedula} ya existe en la base de datos")
-
-# Uso del código
-
-paciente = Paciente('app.db')
-paciente.asignar_nombre('juana')
-paciente.asignar_cedula(0000)
-paciente.asignar_edad(30)
-paciente.asignar_peso(70)
-paciente.asignar_estatura(1.80)
-paciente.asignar_urlI('img_url')
-paciente.asignar_urlS('img_señal')
-paciente.asignar_urlT('img_tabla')
-paciente.realizar_conexion() 
-paciente.asignar_paciente()
-paciente.desconexion()
-
+            print(f"Ya existe un paciente con la cedula: {p.ver_cedula()}")
+        
+#ejemplo temporal de aplicacion
+sis=sistema('app.db')
+sis.asignar_paciente('juan',70,19,80, 1.8,'imagen','señal','tabla')

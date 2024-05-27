@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
+import pandas as pd
 
 # Clase para crear pacientes 
 class Paciente:  
@@ -66,7 +67,7 @@ class Paciente:
         self.__señal_continua= np.reshape(data,(c, p*e),order ='F') # matriz  en 2D
     def verSeñal(self):
         return self.__señal_continua
-    def asiganrSeñal(self,señal):
+    def asignarSeñal(self,señal):
         self.__señal_continua=señal
 
 class sistema: 
@@ -122,7 +123,6 @@ class sistema:
 
     # Método para contar células en una imagen
     def contar_celulas(self, cedula):
-
         if not self.conexion:
             print("No hay conexión a la base de datos")
             return
@@ -180,21 +180,52 @@ class sistema:
         plt.axis('off')
         plt.show()
     
-    #Metodo para generar la señal 
-    def graficas_señal(self, cedula ):
+    # Método para procesar archivo CSV
+    def procesar_csv(self, cedula):
         if not self.conexion:
             print("No hay conexión a la base de datos")
             return
         
         self.cursor = self.conexion.cursor() # Se inicializa el cursor
-        query_url = "SELECT url_imagen FROM Paciente WHERE id = ?"
+
+        # Obtener la URL del archivo CSV del paciente desde la base de datos
+        query_url = "SELECT url_tablas FROM Paciente WHERE id = ?"
         self.cursor.execute(query_url, (cedula,))
         result = self.cursor.fetchone()
+        if result is None:
+            print(f"Paciente con la cédula {cedula} no encontrado en la base de datos")
+            self.cursor.close() # Se cierra el cursor
+            return
 
-        
-        
+        url_tablas = result[0]
+        print(f"Ruta del archivo CSV: {url_tablas}")
 
+        # Leer el archivo CSV
+        try:
+            data = pd.read_csv(url_tablas)
+        except Exception as e:
+            print(f"No se pudo leer el archivo CSV en la ruta: {url_tablas}. Error: {e}")
+            self.cursor.close() # Se cierra el cursor
+            return
+        
+        self.cursor.close() # Se cierra el cursor
+
+        # Mostrar la tabla
+        print("Contenido del archivo CSV:")
+        print(data)
+
+        # Calcular estadisticas
+        promedio_col1 = data.iloc[:, 0].mean()
+        moda_col2 = data.iloc[:, 1].mode()[0]
+        desviacion_col3 = data.iloc[:, 2].std()
+
+        print(f"Promedio de la Temperatura: {promedio_col1}")
+        print(f"Moda de la Oxigenación en sangre: {moda_col2}")
+        print(f"Desviación de la Frecuencia Cardiaca: {desviacion_col3}")
+
+        return promedio_col1, moda_col2, desviacion_col3
 
 sis = sistema('app.db')
-sis.asignar_paciente('John', 88, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'tabla')
-sis.contar_celulas(88)
+sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
+#sis.contar_celulas(88)
+promedio, moda, desviacion = sis.procesar_csv(73)

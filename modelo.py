@@ -5,27 +5,15 @@ from PyQt5.QtCore import QPoint, Qt, QByteArray, QIODevice, QBuffer
 import sqlite3
 from PyQt5.QtCore import QObject
 import os
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.io as sio
+import pandas as pd
 
-# Establecer base de datos, hacer conexion y desconexion 
-class BaseDatos:
-    def __init__(self, nombre_db):
-        self.nombre_db = nombre_db
-        self.conexion = None
-        self.cursor = None
-    
-    def realizar_conexion(self):  # Se realiza la conexion 
-        self.conexion = sqlite3.connect(self.nombre_db)
-        self.cursor = self.conexion.cursor()
-        print("La conexion se realizo exitosamente")
-    
-    def desconexion(self):  # Se realiza la desconexion 
-        if self.conexion:
-            self.conexion.close()
-            print(f"Se desconecto de la base de datos: {self.nombre_db}")
-
-class Paciente(BaseDatos):    # Clase para crear pacientes 
-    def __init__(self, nombre_db):
-        super().__init__(nombre_db)
+# Clase para crear pacientes 
+class Paciente:  
+    def __init__(self):  # Se crean todos los atributos relacionados con el paciente
         self.__nombre = ""
         self.__cedula = None
         self.__edad = None
@@ -35,7 +23,7 @@ class Paciente(BaseDatos):    # Clase para crear pacientes
         self.__urlSeñal = ""
         self.__urlTablas = ""
     
-    # Metodos asignar 
+    # Métodos asignar 
     def asignar_nombre(self, nombre):
         self.__nombre = nombre
     def asignar_cedula(self, id):
@@ -53,7 +41,7 @@ class Paciente(BaseDatos):    # Clase para crear pacientes
     def asignar_urlT(self, urlT):
         self.__urlTablas = urlT
 
-    # Metodos ver
+    # Métodos ver
     def ver_nombre(self):
         return self.__nombre
     def ver_cedula(self):
@@ -71,50 +59,173 @@ class Paciente(BaseDatos):    # Clase para crear pacientes
     def ver_urlT(self):
         return self.__urlTablas
     
-    # Metodo asignar a paciente en base de datos 
-    def asignar_paciente(self):
-        if not self.conexion:
-            print("No hay conexion a la base de datos")
+    def leerSeñal(self):
+        mat_contents = sio.loadmat(self.__urlSeñal) #loading data
+        print("the loaded keys are: " + str(mat_contents.keys())); #the data is loaded as a Python dictionary   
+        data = mat_contents['data']   #Se usa solo para archivo señal potencial 
+        c,p,e=np.shape(data)      #asigancion de varibles a los valores de shep
+        self.__señal_continua= np.reshape(data,(c, p*e),order ='F') # matriz  en 2D
+    def verSeñal(self):
+        return self.__señal_continua
+    def asignarSeñal(self,señal):
+        self.__señal_continua=señal
+
+class sistema: 
+    def __init__(self, nombre_db):  # Se establece como atributos el nombre de la base de datos, la conexión con la base y el cursor 
+        self.nombre_db = nombre_db
+        self.conexion = sqlite3.connect(self.nombre_db)
+        self.cursor = self.conexion.cursor()
+
+        # Crear la tabla Paciente si no existe
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS Paciente (
+            nombre TEXT, 
+            id INTEGER PRIMARY KEY, 
+            edad INTEGER, 
+            peso REAL, 
+            estatura REAL, 
+            url_imagen TEXT, 
+            url_señal TEXT, 
+            url_tablas TEXT)''')
+        self.conexion.commit()
+        self.cursor.close()
+
+    # Método asignar a paciente en base de datos 
+    def asignar_paciente(self, n, c, ed, pe, es, i, s, t):  # Se establecen estos parámetros que vendrán ligados con el controlador y la vista 
+        self.cursor = self.conexion.cursor()
+        if not self.conexion:  # Verificar inicialmente si se conectó correctamente a la base de datos 
+            print("No hay conexión a la base de datos")
             return 
+        p = Paciente()  # Se crea objeto paciente para luego usar los métodos de asignación de atributos 
+        p.asignar_nombre(n)
+        p.asignar_cedula(c)
+        p.asignar_edad(ed)
+        p.asignar_peso(pe)
+        p.asignar_estatura(es)
+        p.asignar_urlI(i)
+        p.asignar_urlS(s)
+        p.asignar_urlT(t)
         
-        query_check = "SELECT * FROM Paciente WHERE ID = ?"
-        self.cursor.execute(query_check, (self.__cedula,))
-        if self.cursor.fetchone() is None:
-            query_insert = '''
+        query_check = "SELECT * FROM Paciente WHERE id = ?"  # Se identifica el parámetro por el cual se va a buscar el paciente 
+        self.cursor.execute(query_check, (p.ver_cedula(),))  # Se usa el método ver_cedula de la clase paciente para verificar si el paciente que se quiere ingresar aún no está en la base de datos
+        if self.cursor.fetchone() is None:  # Si no se encuentra entonces se usa condicional para agregar paciente 
+            query_insert = '''                
             INSERT INTO Paciente (nombre, id, edad, peso, estatura, url_imagen, url_señal, url_tablas)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            '''
-            parametros = (self.__nombre, self.__cedula, self.__edad, self.__peso, self.__estatura, self.__urlImagen, self.__urlSeñal, self.__urlTablas)
-            self.cursor.execute(query_insert, parametros)
+            '''  # Se hace la identificación de parámetros en la tabla de la base de datos Paciente 
+            parametros = (p.ver_nombre(), p.ver_cedula(), p.ver_edad(), p.ver_peso(), p.ver_estatura(), p.ver_urlI(), p.ver_urlS(), p.ver_urlT())
+            self.cursor.execute(query_insert, parametros)  # Se relaciona el query_insert con la tupla de parámetros del paciente
             self.conexion.commit()
-            print(f"Paciente con la cedula {self.__cedula} agregado a la base de datos")
+            self.cursor.close()
+            print(f"Paciente con la cédula {p.ver_cedula()} agregado a la base de datos")  # Retorno de mensaje para verificar en consola la ejecución del código 
         else:
-            print(f"Paciente con la cedula {self.__cedula} ya existe en la base de datos")
+            print(f"Paciente con la cédula {p.ver_cedula()} ya existe en la base de datos")
+            self.cursor.close()
 
-# Uso del código
+    # Método para contar células en una imagen
+    def contar_celulas(self, cedula):
+        if not self.conexion:
+            print("No hay conexión a la base de datos")
+            return
+        
+        self.cursor = self.conexion.cursor() # Se inicializa el cursor
 
-paciente = Paciente('app.db')
-paciente.asignar_nombre('juana')
-paciente.asignar_cedula(0000)
-paciente.asignar_edad(30)
-paciente.asignar_peso(70)
-paciente.asignar_estatura(1.80)
-paciente.asignar_urlI('img_url')
-paciente.asignar_urlS('img_señal')
-paciente.asignar_urlT('img_tabla')
-paciente.realizar_conexion() 
-paciente.asignar_paciente()
-paciente.desconexion()
+        # Obtener la URL de la imagen del paciente desde la base de datos
+        query_url = "SELECT url_imagen FROM Paciente WHERE id = ?"
+        self.cursor.execute(query_url, (cedula,))
+        result = self.cursor.fetchone()
+        if result is None:
+            print(f"Paciente con la cédula {cedula} no encontrado en la base de datos")
+            self.cursor.close() # Se cierra el cursor
+            return
 
-class loging(QObject):
-    def __init__(self):
-        super().__init__()
-        self.__login = '' #loging 
-        self.__password = '' 
-        self.__carpeta = ""
+        url_imagen = result[0]
+        print(f"Ruta de la imagen: {url_imagen}")
 
-    def validaruser(self, l, p):
-        return self.__login == l and self.__password == p
+        # Cargar y procesar la imagen
+        img = cv2.imread(url_imagen)
+        if img is None:
+            print(f"No se pudo cargar la imagen en la ruta: {url_imagen}")
+            self.cursor.close() # Se cierra el cursor
+            return
+        
+        self.cursor.close() # Se cierra el cursor
 
-    def get_path(self, f): 
-        self.__carpeta = f
+        plt.subplot(3, 2, 1)
+        plt.title('Imagen sin transformación')
+        plt.axis('off')
+        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+        # Convertir a escala de grises y aplicar umbral
+        imapB = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, imapB = cv2.threshold(imapB, 127, 255, cv2.THRESH_BINARY)
+        plt.subplot(3, 2, 2)
+        plt.title('Imagen binaria')
+        plt.axis('off')
+        plt.imshow(imapB, cmap='gray', vmin=0, vmax=255)
+        
+        # Apertura, dilatación y erosión
+        kernel = np.ones((5, 5), np.uint8)
+        imapB = cv2.morphologyEx(imapB, cv2.MORPH_OPEN, kernel) 
+        ima2 = cv2.dilate(imapB, kernel, iterations=2)
+        ima2 = cv2.erode(ima2, kernel, iterations=2)
+        num_cells, labeled_image = cv2.connectedComponents(ima2)
+
+        # Imprimir el número de células
+        print("Número de células encontradas:", num_cells - 1)  # Restamos 1 para excluir el fondo
+
+        # Graficar el resultado
+        plt.subplot(3, 2, 3)
+        plt.imshow(labeled_image, cmap='jet')  # Usamos 'jet' colormap para visualizar las etiquetas
+        plt.title('Imagen con células etiquetadas')
+        plt.axis('off')
+        plt.show()
+    
+    # Método para procesar archivo CSV
+    def procesar_csv(self, cedula):
+        if not self.conexion:
+            print("No hay conexión a la base de datos")
+            return
+        
+        self.cursor = self.conexion.cursor() # Se inicializa el cursor
+
+        # Obtener la URL del archivo CSV del paciente desde la base de datos
+        query_url = "SELECT url_tablas FROM Paciente WHERE id = ?"
+        self.cursor.execute(query_url, (cedula,))
+        result = self.cursor.fetchone()
+        if result is None:
+            print(f"Paciente con la cédula {cedula} no encontrado en la base de datos")
+            self.cursor.close() # Se cierra el cursor
+            return
+
+        url_tablas = result[0]
+        print(f"Ruta del archivo CSV: {url_tablas}")
+
+        # Leer el archivo CSV
+        try:
+            data = pd.read_csv(url_tablas)
+        except Exception as e:
+            print(f"No se pudo leer el archivo CSV en la ruta: {url_tablas}. Error: {e}")
+            self.cursor.close() # Se cierra el cursor
+            return
+        
+        self.cursor.close() # Se cierra el cursor
+
+        # Mostrar la tabla
+        print("Contenido del archivo CSV:")
+        print(data)
+
+        # Calcular estadisticas
+        promedio_col1 = data.iloc[:, 0].mean()
+        moda_col2 = data.iloc[:, 1].mode()[0]
+        desviacion_col3 = data.iloc[:, 2].std()
+
+        print(f"Promedio de la Temperatura: {promedio_col1}")
+        print(f"Moda de la Oxigenación en sangre: {moda_col2}")
+        print(f"Desviación de la Frecuencia Cardiaca: {desviacion_col3}")
+
+        return promedio_col1, moda_col2, desviacion_col3
+
+sis = sistema('app.db')
+sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
+#sis.contar_celulas(88)
+promedio, moda, desviacion = sis.procesar_csv(73)

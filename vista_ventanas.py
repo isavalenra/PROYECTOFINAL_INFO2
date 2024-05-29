@@ -83,8 +83,20 @@ class VistaVentanaAgregar(QDialog):
         self.setup()
 
     def setup(self):
-        pass   
+        self.buttonBox.accepted.connect(self.validardatos) 
+        self.buttonBox.rejected.connect(self.closeOption)
 
+    def validardatos(self):
+        pass
+    
+    def closeOption(self):
+        self.hide()
+        self.newWindow = Vista()
+        self.newWindow.setCoordinador(self.__coordinador3)
+        self.newWindow.show()
+
+    def setCoordinador(self, c):
+        self.__coordinador3 = c
 class VentanaBusqueda(QDialog):
     def __init__(self):
         super().__init__()

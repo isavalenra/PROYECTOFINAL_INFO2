@@ -225,7 +225,31 @@ class sistema:
 
         return promedio_col1, moda_col2, desviacion_col3
 
-sis = sistema('app.db')
-sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
+#sis = sistema('app.db')
+#sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
 #sis.contar_celulas(88)
-promedio, moda, desviacion = sis.procesar_csv(73)
+#promedio, moda, desviacion = sis.procesar_csv(73)
+
+class loging(QObject):
+    def __init__(self):
+        super().__init__()
+        self.__login = '' #loging 
+        self.__password = '' 
+        self.__diccpacientes = {}
+
+    def validaruser(self, l, p):
+        return self.__login == l and self.__password == p
+
+    def set_path(self, f): 
+        self.__carpeta = f
+
+    def get_diccpacientes (self):
+        return self.__diccpacientes
+
+    def datos_pacientes(self, id, nombre, edad, altura, peso):
+        self.__diccpacientes[id] = {
+            'nombre': nombre,
+            'edad': edad,
+            'altura': altura,
+            'peso': peso
+        }

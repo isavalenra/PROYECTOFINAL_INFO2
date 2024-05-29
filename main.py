@@ -11,6 +11,8 @@ class Coordinador(object):
     def validarusuario(self,l,p):
         return self.__mi_modelo.validaruser(l,p)
     
+#def datos_paciente(self, id, nombre, edad, altura, peso):
+       # return self.__mi_modelo.datos_pacientes(id, nombre, edad, altura, peso)
 
 def main():
 

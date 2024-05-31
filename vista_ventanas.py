@@ -6,7 +6,6 @@ from PyQt5.QtGui import  QRegExpValidator
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt,QRegExp
 from PyQt5.uic import loadUi
-import pandas as pd
 
 
 class Ventanainicio(QMainWindow):
@@ -100,7 +99,6 @@ class VistaVentanaAgregar(QDialog):
         self.__coordinador3 = c
 
 
-# Copie de aquí hasta el final 8==================================================D
 class VentanaBusqueda(QDialog):
     def __init__(self):
         super().__init__()
@@ -112,19 +110,19 @@ class VentanaBusqueda(QDialog):
         self.buttonBox.rejected.connect(self.closeOption)
         self.verificar_id.setValidator(QRegExpValidator(QRegExp("[0-9]+")))
     
-    def validardatos(self):
-        id = int(self.verificar_id.text())
-        print(type(id))
-        print(id)
+    def validardatos(self): #arreglar esta parte, debido a que cuando no se ingresa nada sale error
+
+        id = int(self.verificar_id.text()) 
         cedula = self.__coordinador2.obtener_datos(id)
         if cedula is None:
             QMessageBox.warning(self, "Advertencia", "Cédula incorrecta")
-        else:
-            self.hide()
-            self.newWindow = VistaVerDatos(id, self.__coordinador2)
-            self.newWindow.setCoordinador(self.__coordinador2)
-            self.newWindow.show()
-           
+            return
+
+        self.hide()
+        self.newWindow = VistaVerDatos(id, self.__coordinador2)
+        self.newWindow.setCoordinador(self.__coordinador2)
+        self.newWindow.show()
+        
     def closeOption(self):
         self.hide()
         self.newWindow = Vista()
@@ -155,7 +153,11 @@ class VistaVerDatos(QDialog):
         self.datos_paciente.setItem(4, 0, QTableWidgetItem(str(peso)))
 
         promedio_col1, moda_col2, desviacion_col3, signosvit = self.__coordinador3.procesar_csv(self.cedula)
-        print(signosvit)
+
+        if signosvit == []:
+            QMessageBox.warning(self, "Advertencia", "No se puede abrir el archivo CSV o no existe")
+            return
+
         temperatura = signosvit[0]
         oxigeno = signosvit[1]
         fcardiaca = signosvit[2]

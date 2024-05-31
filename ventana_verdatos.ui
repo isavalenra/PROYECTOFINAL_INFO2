@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
-    <height>669</height>
+    <width>608</width>
+    <height>517</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,69 +17,55 @@
    <string notr="true">background-color: rgb(170, 170, 255)</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="13" column="0">
-    <widget class="QLabel" name="label_8">
-     <property name="text">
-      <string>Moda oxigenacion:</string>
-     </property>
-    </widget>
-   </item>
    <item row="12" column="0">
-    <widget class="QLabel" name="label_7">
-     <property name="text">
-      <string>Promedio Temperatua :  </string>
-     </property>
+    <widget class="QTableWidget" name="tableWidget_2">
+     <row>
+      <property name="text">
+       <string>Promedio</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Moda</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Desviación</string>
+      </property>
+     </row>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>ID:</string>
-     </property>
+   <item row="0" column="0" colspan="2">
+    <widget class="QTableWidget" name="datos_paciente">
+     <row>
+      <property name="text">
+       <string>Nombre</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>ID</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Edad</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Altura</string>
+      </property>
+     </row>
+     <row>
+      <property name="text">
+       <string>Peso</string>
+      </property>
+     </row>
     </widget>
    </item>
-   <item row="4" column="3">
-    <widget class="QLineEdit" name="ingresar_id">
-     <property name="styleSheet">
-      <string notr="true">background-color:rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="0">
-    <widget class="QLabel" name="label_9">
-     <property name="text">
-      <string>Desviacion de frecuencia:  </string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Nombre: </string>
-     </property>
-    </widget>
-   </item>
-   <item row="17" column="0" colspan="4">
-    <widget class="QLabel" name="label">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="16" column="3">
-    <widget class="QPushButton" name="agregar_datos">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
-     </property>
-     <property name="text">
-      <string>agregar</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0" colspan="4">
+   <item row="11" column="0">
     <widget class="QTableWidget" name="tabla_signos">
      <property name="styleSheet">
       <string notr="true"/>
@@ -101,83 +87,13 @@
      </column>
     </widget>
    </item>
-   <item row="8" column="3">
-    <widget class="QLineEdit" name="ingresar_peso">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="16" column="0">
+   <item row="13" column="0">
     <widget class="QPushButton" name="salir_de_ventana">
      <property name="styleSheet">
       <string notr="true">background-color: rgb(255, 255, 255)</string>
      </property>
      <property name="text">
       <string>Salir</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Peso:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>Altura:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Edad:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="1">
-    <widget class="QLineEdit" name="ingresar_oxigenacion">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QLineEdit" name="ingresar_nombre">
-     <property name="styleSheet">
-      <string notr="true">background-color:rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="3">
-    <widget class="QLineEdit" name="ingresar_edad">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="3">
-    <widget class="QLineEdit" name="ingresar_altura">
-     <property name="styleSheet">
-      <string notr="true">background-color:rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="1">
-    <widget class="QLineEdit" name="ingresar_promtem">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="1">
-    <widget class="QLineEdit" name="ingresar_desfre">
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255)</string>
      </property>
     </widget>
    </item>

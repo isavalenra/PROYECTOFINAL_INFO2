@@ -1,11 +1,12 @@
 import sys
 import os
-from PyQt5.QtWidgets import QMainWindow, QDialog,QMessageBox, QFileDialog, QLineEdit
+from PyQt5.QtWidgets import QMainWindow, QDialog,QMessageBox, QFileDialog, QLineEdit, QTableWidgetItem
 from PyQt5.QtGui import QDoubleValidator
 from PyQt5.QtGui import  QRegExpValidator
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt,QRegExp
 from PyQt5.uic import loadUi
+import pandas as pd
 
 
 class Ventanainicio(QMainWindow):
@@ -97,6 +98,9 @@ class VistaVentanaAgregar(QDialog):
 
     def setCoordinador(self, c):
         self.__coordinador3 = c
+
+
+# Copie de aquí hasta el final 8==================================================D
 class VentanaBusqueda(QDialog):
     def __init__(self):
         super().__init__()
@@ -109,11 +113,18 @@ class VentanaBusqueda(QDialog):
         self.verificar_id.setValidator(QRegExpValidator(QRegExp("[0-9]+")))
     
     def validardatos(self):
-        self.hide()
-        self.newWindow = VistaVerDatos()
-        self.newWindow.setCoordinador(self.__coordinador2)
-        self.newWindow.show()
-    
+        id = int(self.verificar_id.text())
+        print(type(id))
+        print(id)
+        cedula = self.__coordinador2.obtener_datos(id)
+        if cedula is None:
+            QMessageBox.warning(self, "Advertencia", "Cédula incorrecta")
+        else:
+            self.hide()
+            self.newWindow = VistaVerDatos(id, self.__coordinador2)
+            self.newWindow.setCoordinador(self.__coordinador2)
+            self.newWindow.show()
+           
     def closeOption(self):
         self.hide()
         self.newWindow = Vista()
@@ -123,40 +134,58 @@ class VentanaBusqueda(QDialog):
     def setCoordinador(self, c):
         self.__coordinador2 = c
 class VistaVerDatos(QDialog):
-    def __init__(self):
+    def __init__(self,cedula,coordinador):
         super().__init__()
+        self.cedula = cedula
+        self.__coordinador3 = coordinador
         loadUi("ventana_verdatos.ui", self)
         self.setup()
 
     def setup(self):
-        self.ingresar_nombre.setValidator(QRegExpValidator(QRegExp("[a-zA-Z ]+")))
-        self.ingresar_id.setValidator(QRegExpValidator(QRegExp("[0-9]+")))
-        self.ingresar_edad.setValidator(QRegExpValidator(QRegExp("[0-9]+")))
-        self.ingresar_altura.setValidator(QDoubleValidator(0.0, 999999.99, 2))
-        self.ingresar_peso.setValidator(QRegExpValidator(QRegExp("[0-9]+")))
         self.salir_de_ventana.clicked.connect(self.close)
-        self.agregar_datos.clicked.connect(self.save)
 
-    def save(self):
-        id = self.ingresar_id.text()
-        nombre = self.ingresar_nombre.text()
-        edad = self.ingresar_edad.text()
-        altura = self.ingresar_altura.text()
-        peso = self.ingresar_peso.text()
+        nombre,id, edad, altura, peso = self.__coordinador3.obtener_datos(self.cedula)
 
-        if not id or not nombre or not edad or not altura or not peso:
-            QMessageBox.warning(self, "Advertencia", "Todos los campos deben estar llenos.")
+        self.datos_paciente.setRowCount(5)
+        self.datos_paciente.setColumnCount(1)
+        self.datos_paciente.setItem(0, 0, QTableWidgetItem(str(id)))
+        self.datos_paciente.setItem(1, 0, QTableWidgetItem(str(nombre)))
+        self.datos_paciente.setItem(2, 0, QTableWidgetItem(str(edad)))
+        self.datos_paciente.setItem(3, 0, QTableWidgetItem(str(altura)))
+        self.datos_paciente.setItem(4, 0, QTableWidgetItem(str(peso)))
 
-        else:   
-            self.__coordinador3.datos_paciente(id, nombre, edad, altura, peso)
-            QMessageBox.information(self, "Guardado", "Datos guardados correctamente")
+        promedio_col1, moda_col2, desviacion_col3, signosvit = self.__coordinador3.procesar_csv(self.cedula)
+        print(signosvit)
+        temperatura = signosvit[0]
+        oxigeno = signosvit[1]
+        fcardiaca = signosvit[2]
+
+        self.tabla_signos.clearContents()
+        self.tabla_signos.setRowCount(len(temperatura))
+
+        for i in range(len(temperatura)):
+            self.tabla_signos.setItem(i, 0, QTableWidgetItem(str(temperatura[i])))  # Temperatura in column 0
+            self.tabla_signos.setItem(i, 1, QTableWidgetItem(str(oxigeno[i])))      # Oxígeno in column 1
+            self.tabla_signos.setItem(i, 2, QTableWidgetItem(str(fcardiaca[i])))     # Frecuencia cardíaca in column 2
+
+        promedio_col1 = f"{promedio_col1:.2f}"
+        moda_col2 = f"{moda_col2:.2f}"
+        desviacion_col3 = f"{desviacion_col3:.2f}"
+
+
+        self.tableWidget_2.setRowCount(3)
+        self.tableWidget_2.setColumnCount(1)
+        self.tableWidget_2.setItem(0, 0, QTableWidgetItem(promedio_col1))
+        self.tableWidget_2.setItem(1, 0, QTableWidgetItem(moda_col2))
+        self.tableWidget_2.setItem(2, 0, QTableWidgetItem(desviacion_col3))
+
+    def setCoordinador(self, c):
+        self.__coordinador = c
         
     def close (self):
         self.hide()
         self.lastWindow = Vista()
-        self.lastWindow.setCoordinador(self.__coordinador3)
+        self.lastWindow.setCoordinador(self.__coordinador)
         self.lastWindow.show()
         
 
-    def setCoordinador(self, c):
-        self.__coordinador3 = c

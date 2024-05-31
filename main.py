@@ -1,4 +1,4 @@
-from modelo import loging
+from modelo import sistema
 from vista_ventanas import Ventanainicio
 import sys
 from PyQt5.QtWidgets import QApplication
@@ -11,14 +11,23 @@ class Coordinador(object):
     def validarusuario(self,l,p):
         return self.__mi_modelo.validaruser(l,p)
     
-#def datos_paciente(self, id, nombre, edad, altura, peso):
-       # return self.__mi_modelo.datos_pacientes(id, nombre, edad, altura, peso)
+    def datos_paciente(self, id, nombre, edad, altura, peso):
+        return self.__mi_modelo.datos_pacientes(id, nombre, edad, altura, peso)
+    
+    def obtener_datos(self,cedula):
+        return self.__mi_modelo.obtener_datos_paciente(cedula)
+    
+    def procesar_csv (self,cedula):
+        return self.__mi_modelo.procesar_csv(cedula)
+    
+# def datos_signosvit (self,cedula):
+#     return self.__mi_modelo.procesar_csv(cedula)
 
 def main():
 
     app = QApplication(sys.argv)
     mi_vista = Ventanainicio()
-    mi_modelo = loging()
+    mi_modelo = sistema('app.db')
     mi_coordinador = Coordinador(mi_vista,mi_modelo)
     mi_vista.setCoordinador(mi_coordinador)
     mi_vista.show()

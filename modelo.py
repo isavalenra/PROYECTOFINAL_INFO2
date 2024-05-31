@@ -75,6 +75,13 @@ class sistema:
         self.nombre_db = nombre_db
         self.conexion = sqlite3.connect(self.nombre_db)
         self.cursor = self.conexion.cursor()
+        self.login = '' #loging 
+        self.password = '' 
+        self.diccpacientes = {}
+
+        self.login = '' #aquí copias el usuario ----------
+        self.password = '' #aquí copias la contraseña --------------------
+        self.diccpacientes = {}
 
         # Crear la tabla Paciente si no existe
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS Paciente (
@@ -88,6 +95,12 @@ class sistema:
             url_tablas TEXT)''')
         self.conexion.commit()
         self.cursor.close()
+
+
+    def validaruser(self, l, p):
+        return self.login == l and self.password == p
+
+
 
     # Método asignar a paciente en base de datos 
     def asignar_paciente(self, n, c, ed, pe, es, i, s, t):  # Se establecen estos parámetros que vendrán ligados con el controlador y la vista 
@@ -120,6 +133,30 @@ class sistema:
         else:
             print(f"Paciente con la cédula {p.ver_cedula()} ya existe en la base de datos")
             self.cursor.close()
+
+
+    def obtener_datos_paciente(self, cedula):
+        cedula = int(cedula) 
+        self.cursor = self.conexion.cursor()
+        self.cursor.execute("SELECT nombre, id, edad, estatura, peso FROM Paciente WHERE id = ?", (cedula,))
+        resultados = self.cursor.fetchall()
+        print(resultados)
+        if len(resultados) > 0:
+            nombre = resultados[0][0]
+            id = resultados[0][1]
+            edad = resultados[0][2]
+            altura = resultados[0][3]
+            peso = resultados[0][4]
+            self.cursor.close()
+            return id, nombre, edad, altura, peso
+        else:
+            self.cursor.close()
+            return None
+            
+
+
+            
+
 
     # Método para contar células en una imagen
     def contar_celulas(self, cedula):
@@ -213,7 +250,13 @@ class sistema:
         # Mostrar la tabla
         print("Contenido del archivo CSV:")
         print(data)
+       
+        temperatura = data['temperatura'].tolist()
+        oxigeno = data['oxigeno'].tolist()
+        fcardiaca = data['fcardiaca'].tolist()
 
+        signosvit = [temperatura, oxigeno, fcardiaca]
+        
         # Calcular estadisticas
         promedio_col1 = data.iloc[:, 0].mean()
         moda_col2 = data.iloc[:, 1].mode()[0]
@@ -223,33 +266,12 @@ class sistema:
         print(f"Moda de la Oxigenación en sangre: {moda_col2}")
         print(f"Desviación de la Frecuencia Cardiaca: {desviacion_col3}")
 
-        return promedio_col1, moda_col2, desviacion_col3
+        return promedio_col1, moda_col2, desviacion_col3, signosvit
 
-#sis = sistema('app.db')
-#sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
+sis = sistema('app.db')
+sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
 #sis.contar_celulas(88)
-#promedio, moda, desviacion = sis.procesar_csv(73)
+promedio, moda, desviacion,signosvit = sis.procesar_csv(73)
 
-class loging(QObject):
-    def __init__(self):
-        super().__init__()
-        self.__login = '' #loging 
-        self.__password = '' 
-        self.__diccpacientes = {}
 
-    def validaruser(self, l, p):
-        return self.__login == l and self.__password == p
 
-    def set_path(self, f): 
-        self.__carpeta = f
-
-    def get_diccpacientes (self):
-        return self.__diccpacientes
-
-    def datos_pacientes(self, id, nombre, edad, altura, peso):
-        self.__diccpacientes[id] = {
-            'nombre': nombre,
-            'edad': edad,
-            'altura': altura,
-            'peso': peso
-        }

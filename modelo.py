@@ -70,6 +70,28 @@ class Paciente:
     def asignarSeñal(self,señal):
         self.__señal_continua=señal
 
+class LoginModelo:
+    def __init__(self, user="usuarios.json"):
+        self.user = user
+        self.load()
+    
+    def load(self):
+        try:
+            with open(self.user, 'r') as file:
+                self.usuario = json.load(file)
+        except FileNotFoundError:
+            self.usuario = []
+            print("No hay usuarios")
+
+    def existe(self, usuario_1, password):
+        try:
+            for i in self.usuario:
+                if i['usuario'] == usuario_1 and i['password'] == password:
+                    return (1, f'{usuario_1} bienvenido')
+            return 0
+        except TypeError:
+            return 2
+
 class sistema: 
     def __init__(self, nombre_db):  # Se establece como atributos el nombre de la base de datos, la conexión con la base y el cursor 
         self.nombre_db = nombre_db
@@ -99,8 +121,6 @@ class sistema:
 
     def validaruser(self, l, p):
         return self.login == l and self.password == p
-
-
 
     # Método asignar a paciente en base de datos 
     def asignar_paciente(self, n, c, ed, pe, es, i, s, t):  # Se establecen estos parámetros que vendrán ligados con el controlador y la vista 
@@ -152,11 +172,6 @@ class sistema:
         else:
             self.cursor.close()
             return None
-            
-
-
-            
-
 
     # Método para contar células en una imagen
     def contar_celulas(self, cedula):
@@ -267,11 +282,44 @@ class sistema:
         print(f"Desviación de la Frecuencia Cardiaca: {desviacion_col3}")
 
         return promedio_col1, moda_col2, desviacion_col3, signosvit
+    
+    #Metodo procesamiento de la señal 
+    def procesar_señal(self,cedula):
+            if not self.conexion:
+                print("No hay conexión a la base de datos")
+                return
+            self.cursor = self.conexion.cursor() # Se inicializa el cursor
+            query_url = "SELECT url_señal FROM Paciente WHERE id = ?"
+            self.cursor.execute(query_url, (cedula,))
+            result = self.cursor.fetchone()
+            mat_contents = sio.loadmat(result)
+            matriz= mat_contents['data']
+            c,p,e=np.shape(data)
+            self.senal_continua = np.reshape(data,(c, p*e),order ='F') # matriz en 2D
+    
+    #Metodo para asignar los datos de la señal
+    def asignarDatos(self):
+        self.canales = self.senal_continua.shape[0] #8 canales 
+        self.puntos = self.senal_continua.shape[1]  #360000 puntos 
+    
+    #Metodo para devolver el segmento 
+    def devolver_segmento(self, x_min, x_max):
+        if x_min >= x_max:
+            return None
+        return self.senal_continua[:,x_min:x_max]
+   
+    # Metodo para no modificar el original se debe hacer una copia
+    def escalar_senal(self,x_min,x_max, escala):
+        if x_min >= x_max:
+            return None
+        copia_data = self.senal_continua[:,x_min:x_max].copy()
+        return copia_data*escala
+    
+    #Metodo para promedio de la señal 
+    def promedio(self,c,xmax,xmin):
+        return np.mean(self.senal_continua[c, xmin:xmax],0)
 
-sis = sistema('app.db')
-sis.asignar_paciente('Pablo', 73, 19, 80, 1.8, r'globulosrojos.jpg', 'señal', 'signosvit.csv')
-#sis.contar_celulas(88)
-promedio, moda, desviacion,signosvit = sis.procesar_csv(73)
 
+     
 
 

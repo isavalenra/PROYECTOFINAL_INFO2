@@ -93,7 +93,7 @@ class LoginModelo:
             return 2
 
 class sistema: 
-    def __init__(self, nombre_db):  # Se establece como atributos el nombre de la base de datos, la conexión con la base y el cursor 
+    def __init__(self, nombre_db="app.db"):  # Se establece como atributos el nombre de la base de datos, la conexión con la base y el cursor 
         self.nombre_db = nombre_db
         self.conexion = sqlite3.connect(self.nombre_db)
         self.cursor = self.conexion.cursor()
@@ -117,10 +117,6 @@ class sistema:
             url_tablas TEXT)''')
         self.conexion.commit()
         self.cursor.close()
-
-
-    def validaruser(self, l, p):
-        return self.login == l and self.password == p
 
     # Método asignar a paciente en base de datos 
     def asignar_paciente(self, n, c, ed, pe, es, i, s, t):  # Se establecen estos parámetros que vendrán ligados con el controlador y la vista 
@@ -153,7 +149,6 @@ class sistema:
         else:
             print(f"Paciente con la cédula {p.ver_cedula()} ya existe en la base de datos")
             self.cursor.close()
-
 
     def obtener_datos_paciente(self, cedula):
         cedula = int(cedula) 
@@ -284,24 +279,42 @@ class sistema:
         return promedio_col1, moda_col2, desviacion_col3, signosvit
     
     #Metodo procesamiento de la señal 
-    def procesar_señal(self,cedula):
-            if not self.conexion:
-                print("No hay conexión a la base de datos")
-                return
-            self.cursor = self.conexion.cursor() # Se inicializa el cursor
-            query_url = "SELECT url_señal FROM Paciente WHERE id = ?"
-            self.cursor.execute(query_url, (cedula,))
-            result = self.cursor.fetchone()
-            mat_contents = sio.loadmat(result)
-            matriz= mat_contents['data']
-            c,p,e=np.shape(data)
-            self.senal_continua = np.reshape(data,(c, p*e),order ='F') # matriz en 2D
-    
-    #Metodo para asignar los datos de la señal
-    def asignarDatos(self):
-        self.canales = self.senal_continua.shape[0] #8 canales 
-        self.puntos = self.senal_continua.shape[1]  #360000 puntos 
-    
+    def procesar_señal(self , cedula):
+        if not self.conexion:
+            print("No hay conexión a la base de datos")
+            return
+        
+        self.cursor = self.conexion.cursor() # Se inicializa el cursor
+        query_url = "SELECT url_señal FROM Paciente WHERE id = ?"
+        self.cursor.execute(query_url, (cedula,))
+        result = self.cursor.fetchone()
+        url_s = result[0]  # Obtener la URL de la señal desde el resultado
+        try:
+            mat_contents = sio.loadmat(url_s)
+            matriz = mat_contents['data']  #Se usa con documento C001R_EP_reposo.mat 
+            c, p, e = np.shape(matriz)
+            self.senal_continua = np.reshape(matriz, (c, p*e), order='F') # matriz en 2D
+            return self.senal_continua
+        except Exception as e:
+            print("Error al procesar la señal:", e)
+            return None
+        
+        #Forma de graficacion
+        # s=sistema()
+        # d=50
+        # senal_continua=s.procesar_señal(d)
+        # t = np.linspace(0,4,4000)
+        # plt.plot(t,senal_continua[0,:4000])
+        # plt.plot(t,senal_continua[1,:4000]+20,'y-')
+        # plt.plot(t,senal_continua[2,:4000]+40,'c-')
+        # plt.plot(t,senal_continua[3,:4000]+60,'b-')
+        # plt.plot(t,senal_continua[4,:4000]+80,'k-')
+        # plt.plot(t,senal_continua[5,:4000]+100,'r-')
+        # plt.xlabel('S')
+        # plt.ylabel('uV')
+        # plt.show()
+        # ax1.plot()
+        
     #Metodo para devolver el segmento 
     def devolver_segmento(self, x_min, x_max):
         if x_min >= x_max:
@@ -320,6 +333,7 @@ class sistema:
         return np.mean(self.senal_continua[c, xmin:xmax],0)
 
 
-     
+
+
 
 

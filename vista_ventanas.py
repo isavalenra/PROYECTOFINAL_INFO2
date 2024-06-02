@@ -50,7 +50,7 @@ class VentaMenu(QDialog):
         loadUi("ventana resultado.ui",self)
         self.vetController =Coordinador()
         self.setup()
-    
+        
     def setup(self):
         self.boton_agregar.clicked.connect(self.abrir_ventana_agregar)
         self.boton_Cdatos.clicked.connect(self.abrir_ventana_Cdatos)
@@ -59,8 +59,7 @@ class VentaMenu(QDialog):
         self.boton_menu.clicked.connect(self.abrir_ventana_menu)
         self.Bagregar_pac.clicked.connect(self.agregar_pac)
         self.boton_buscar.clicked.connect(self.buscar_paciente)
-        
-    
+
     def abrir_ventana_menu(self):
         ventana_menu=self.stackedWidget.setCurrentIndex(0)
     def abrir_ventana_agregar(self):

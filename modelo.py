@@ -161,8 +161,8 @@ class sistema:
             nombre = resultados[0][0]
             id = resultados[0][1]
             edad = resultados[0][2]
-            altura = resultados[0][4]
-            peso = resultados[0][3]
+            altura = resultados[0][3]
+            peso = resultados[0][4]
             self.cursor.close()
             return id, nombre, edad, peso, altura
         else:

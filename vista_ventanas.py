@@ -1,17 +1,19 @@
-import sys
+import sys 
 import os
-from PyQt5.QtWidgets import QMainWindow, QDialog,QMessageBox, QFileDialog, QLineEdit, QTableWidgetItem
-from PyQt5.QtGui import QDoubleValidator
-from PyQt5.QtGui import  QRegExpValidator
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox, QLineEdit, QPushButton, QTableWidgetItem
+from PyQt5.QtGui import QRegExpValidator, QIntValidator
 from PyQt5.QtCore import Qt,QRegExp
 from PyQt5.uic import loadUi
+from PyQt5.uic import loadUi
+import json
+from main import* 
 
 
 class Ventanainicio(QMainWindow):
-    def __init__(self,ppal=None):
-        super().__init__(ppal)
+    def __init__(self):
+        super().__init__()
         loadUi("inicio.ui",self)
+        self.coordinador=login_controlador()
         self.setup()
     
     def setup(self):
@@ -20,27 +22,25 @@ class Ventanainicio(QMainWindow):
         self.campo_password.setEchoMode(QLineEdit.Password)
         self.buttonBox.accepted.connect(self.validardatos) 
         self.buttonBox.rejected.connect(self.closeOption)
-
-    def setCoordinador(self,c):
-        self.__coordinador = c
     
 
     def validardatos(self):
-        pass
         username = self.campo_user.text()
         password = self.campo_password.text()
-        verificar = self.__coordinador.validarusuario(username,password)
+        verificar = self.coordinador.log_in(username,password)
 
-        if verificar:
-            
-            self.hide()
-            self.newWindow = Vista()
-            self.newWindow.setCoordinador(self.__coordinador)
-            self.newWindow.show()
-    
-        else:
-            QMessageBox.warning(self, "Error de inicio de sesión", "Usuario o contraseña incorrectos.")
-    
+        if isinstance(verificar, tuple):
+            self.vetView = Vista()
+            self.vetView.show()
+            self.close()
+        elif existe == 0:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setText("No existe un usuario con los \ndatos proporcionados")
+            msgBox.setWindowTitle('Datos incorrectos')
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+
     def closeOption(self):
         self.close()
 
@@ -191,3 +191,7 @@ class VistaVerDatos(QDialog):
         self.lastWindow.show()
         
 
+app=QApplication(sys.argv)
+mi_vista2=Ventanainicio()
+mi_vista2.show()
+sys.exit(app.exec())

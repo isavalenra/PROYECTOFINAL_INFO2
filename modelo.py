@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io as sio
 import pandas as pd
+import json 
 
 # Clase para crear pacientes 
 class Paciente:  

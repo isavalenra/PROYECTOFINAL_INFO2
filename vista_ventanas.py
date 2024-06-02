@@ -44,154 +44,64 @@ class Ventanainicio(QMainWindow):
     def closeOption(self):
         self.close()
 
-class Vista(QDialog):
+class VentaMenu(QDialog):
     def __init__(self):
-        super().__init__()
-        loadUi("ventana_menu.ui", self)
+        loadUi("ventana resultado.ui",self)
+        self.vetController =Coordinador()
         self.setup()
-
-    def setup(self):
-        self.boton_agregar.clicked.connect(self.open)
-        self.boton_salir.clicked.connect(self.close)
-        self.boton_consultar.clicked.connect(self.search)
-
-    def open(self):
-        self.hide()
-        self.newWindow = VistaVentanaAgregar()
-        self.newWindow.setCoordinador(self.__coordinador2)
-        self.newWindow.show()
-
-    def search(self):
-        self.hide()
-        self.newWindow = VentanaBusqueda()
-        self.newWindow.setCoordinador(self.__coordinador2)
-        self.newWindow.show()
-
-    def setCoordinador(self, c):
-        self.__coordinador2 = c
-
-    def close (self):
-        self.hide()
-        self.lastWindow = Ventanainicio()
-        self.lastWindow.setCoordinador(self.__coordinador2)
-        self.lastWindow.show()
-
-class VistaVentanaAgregar(QDialog):
-    def __init__(self):
-        super().__init__()
-        loadUi("ventana_agregar.ui", self)
-        self.setup()
-
-    def setup(self):
-        self.buttonBox.accepted.connect(self.validardatos) 
-        self.buttonBox.rejected.connect(self.closeOption)
-
-    def validardatos(self):
-        pass
     
-    def closeOption(self):
-        self.hide()
-        self.newWindow = Vista()
-        self.newWindow.setCoordinador(self.__coordinador3)
-        self.newWindow.show()
-
-    def setCoordinador(self, c):
-        self.__coordinador3 = c
-
-
-class VentanaBusqueda(QDialog):
-    def __init__(self):
-        super().__init__()
-        loadUi("ventana_busqueda.ui", self)
-        self.setup()  
-
     def setup(self):
-        self.buttonBox.accepted.connect(self.validardatos) 
-        self.buttonBox.rejected.connect(self.closeOption)
-        self.verificar_id.setValidator(QRegExpValidator(QRegExp("[0-9]+")))
+        self.boton_agregar.clicked.connect(self.abrir_ventana_agregar)
+        self.boton_Cdatos.clicked.connect(self.abrir_ventana_Cdatos)
+        self.boton_Cestudios.clicked.connect(self.abrir_ventana_Cestudios)
+        self.boton_salir.clicked.connect(self.abrir_ventana_salir)
+        self.boton_menu.clicked.connect(self.abrir_ventana_menu)
+        self.Bagregar_pac.clicked.connect(self.agregar_pac)
+        
+        self.tabla()
     
-    def validardatos(self): #arreglar esta parte, debido a que cuando no se ingresa nada sale error
+    def abrir_ventana_menu(self):
+        ventana_menu=self.stackedWidget.setCurrentIndex(0)
 
-        id = int(self.verificar_id.text()) 
-        cedula = self.__coordinador2.obtener_datos(id)
-        if cedula is None:
-            QMessageBox.warning(self, "Advertencia", "Cédula incorrecta")
-            return
+    def abrir_ventana_agregar(self):
+        ventana_agregar=self.stackedWidget.setCurrentIndex(1)   
 
-        self.hide()
-        self.newWindow = VistaVerDatos(id, self.__coordinador2)
-        self.newWindow.setCoordinador(self.__coordinador2)
-        self.newWindow.show()
+    def abrir_ventana_Cdatos(self):
+        ventana_Cdatos=self.stackedWidget.setCurrentIndex(2)
         
-    def closeOption(self):
-        self.hide()
-        self.newWindow = Vista()
-        self.newWindow.setCoordinador(self.__coordinador2)
-        self.newWindow.show()
-
-    def setCoordinador(self, c):
-        self.__coordinador2 = c
-class VistaVerDatos(QDialog):
-    def __init__(self,cedula,coordinador):
-        super().__init__()
-        self.cedula = cedula
-        self.__coordinador3 = coordinador
-        loadUi("ventana_verdatos.ui", self)
-        self.setup()
-
-    def setup(self):
-        self.salir_de_ventana.clicked.connect(self.close)
-
-        nombre,id, edad, altura, peso = self.__coordinador3.obtener_datos(self.cedula)
-
-        self.datos_paciente.setRowCount(5)
-        self.datos_paciente.setColumnCount(1)
-        self.datos_paciente.setItem(0, 0, QTableWidgetItem(str(id)))
-        self.datos_paciente.setItem(1, 0, QTableWidgetItem(str(nombre)))
-        self.datos_paciente.setItem(2, 0, QTableWidgetItem(str(edad)))
-        self.datos_paciente.setItem(3, 0, QTableWidgetItem(str(altura)))
-        self.datos_paciente.setItem(4, 0, QTableWidgetItem(str(peso)))
-
-        promedio_col1, moda_col2, desviacion_col3, signosvit = self.__coordinador3.procesar_csv(self.cedula)
-
-        if signosvit == []:
-            QMessageBox.warning(self, "Advertencia", "No se puede abrir el archivo CSV o no existe")
-            return
-
-        temperatura = signosvit[0]
-        oxigeno = signosvit[1]
-        fcardiaca = signosvit[2]
-
-        self.tabla_signos.clearContents()
-        self.tabla_signos.setRowCount(len(temperatura))
-
-        for i in range(len(temperatura)):
-            self.tabla_signos.setItem(i, 0, QTableWidgetItem(str(temperatura[i])))  # Temperatura in column 0
-            self.tabla_signos.setItem(i, 1, QTableWidgetItem(str(oxigeno[i])))      # Oxígeno in column 1
-            self.tabla_signos.setItem(i, 2, QTableWidgetItem(str(fcardiaca[i])))     # Frecuencia cardíaca in column 2
-
-        promedio_col1 = f"{promedio_col1:.2f}"
-        moda_col2 = f"{moda_col2:.2f}"
-        desviacion_col3 = f"{desviacion_col3:.2f}"
-
-
-        self.tableWidget_2.setRowCount(3)
-        self.tableWidget_2.setColumnCount(1)
-        self.tableWidget_2.setItem(0, 0, QTableWidgetItem(promedio_col1))
-        self.tableWidget_2.setItem(1, 0, QTableWidgetItem(moda_col2))
-        self.tableWidget_2.setItem(2, 0, QTableWidgetItem(desviacion_col3))
-
-    def setCoordinador(self, c):
-        self.__coordinador = c
+    def abrir_ventana_Cestudios(self):
+        ventana_Cestudios= self.stackedWidget.setCurrentIndex(3) 
         
-    def close (self):
-        self.hide()
-        self.lastWindow = Vista()
-        self.lastWindow.setCoordinador(self.__coordinador)
-        self.lastWindow.show()
+    def abrir_ventana_salir(self):
+        self.ventanaL=ventanaLogin()
+        self.ventanaL.show()
+        self.close()
+    
+    def agregar_pac(self):
+        nombre = self.nombre.text()
+        iden = self.id.text()        
+        edad = self.edad.text()
+        peso = self.peso.text()
+        estatura = self.estatura.text()
+        url_I = self.url_imagen.text()
+        url_S = self.url_senal.text()
+        url_signos = self.url_signos.text()
         
+        if not iden or not nombre or not edad or not peso or not estatura or not url_I or not  url_S or not url_signos:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setText("Debe ingresar todos los datos")
+            msgBox.setWindowTitle('Datos faltantes')
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+        else:
+            isUnique = self.vetController.agregaPac(nombre,)
+            self.abrir_ventana_menu()
 
-app=QApplication(sys.argv)
-mi_vista2=Ventanainicio()
-mi_vista2.show()
-sys.exit(app.exec())
+
+
+
+# app=QApplication(sys.argv)
+# mi_vista2=Ventanainicio()
+# mi_vista2.show()
+# sys.exit(app.exec())

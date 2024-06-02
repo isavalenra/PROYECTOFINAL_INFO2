@@ -6,21 +6,12 @@ class login_controlador:
     def log_in(self, username:str, password:str):
         result = self.user_model.existe(username, password)
         return result
-class Coordinador(object):
-    def __init__(self,vista,modelo):
-        self.__mi_vista = vista
-        self.__mi_modelo = modelo
+class Coordinador():
+    def __init__(self):
+        self.__mi_modelo = sistema()
+    
+    def agregaPac(self, n, c, ed, pe, es, i, s, t):
+        return self.__mi_modelo.asignar_paciente( n, c, ed, pe, es, i, s, t)
 
-    def validarusuario(self,l,p):
-        return self.__mi_modelo.validaruser(l,p)
-    
-    def datos_paciente(self, id, nombre, edad, altura, peso):
-        return self.__mi_modelo.datos_pacientes(id, nombre, edad, altura, peso)
-    
-    def obtener_datos(self,cedula):
-        return self.__mi_modelo.obtener_datos_paciente(cedula)
-    
-    def procesar_csv (self,cedula):
-        return self.__mi_modelo.procesar_csv(cedula)
 
 

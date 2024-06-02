@@ -280,7 +280,7 @@ class sistema:
         return promedio_col1, moda_col2, desviacion_col3, signosvit
     
     #Metodo procesamiento de la señal 
-    def procesar_señal(self , cedula):
+    def procesar_senal(self , cedula):
         if not self.conexion:
             print("No hay conexión a la base de datos")
             return

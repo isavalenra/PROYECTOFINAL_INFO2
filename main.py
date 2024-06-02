@@ -18,6 +18,9 @@ class Coordinador():
     
     def procesarCsv(self,cedula):
         return self.mi_modelo.procesar_csv(cedula)
+    
+    def procesar_senal(self,cedula):
+        return self.mi_modelo.procesar_senal(cedula)
 
 
 

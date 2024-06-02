@@ -109,7 +109,7 @@
             <item>
              <widget class="QStackedWidget" name="stackedWidget">
               <property name="currentIndex">
-               <number>2</number>
+               <number>3</number>
               </property>
               <widget class="QWidget" name="page_menu"/>
               <widget class="QWidget" name="pag_agregar">
@@ -434,14 +434,24 @@
                        <property name="frameShadow">
                         <enum>QFrame::Raised</enum>
                        </property>
+                       <widget class="QWidget" name="contenedor_senal" native="true">
+                        <property name="geometry">
+                         <rect>
+                          <x>-1</x>
+                          <y>-1</y>
+                          <width>501</width>
+                          <height>301</height>
+                         </rect>
+                        </property>
+                       </widget>
                       </widget>
                       <widget class="QWidget" name="horizontalLayoutWidget_2">
                        <property name="geometry">
                         <rect>
                          <x>30</x>
-                         <y>10</y>
+                         <y>39</y>
                          <width>451</width>
-                         <height>80</height>
+                         <height>51</height>
                         </rect>
                        </property>
                        <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -465,6 +475,28 @@
                            <string>--&gt;</string>
                           </property>
                          </widget>
+                        </item>
+                       </layout>
+                      </widget>
+                      <widget class="QWidget" name="horizontalLayoutWidget">
+                       <property name="geometry">
+                        <rect>
+                         <x>29</x>
+                         <y>10</y>
+                         <width>451</width>
+                         <height>25</height>
+                        </rect>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_8">
+                        <item>
+                         <widget class="QLabel" name="label">
+                          <property name="text">
+                           <string>Cedula</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="guardar_cedula"/>
                         </item>
                        </layout>
                       </widget>

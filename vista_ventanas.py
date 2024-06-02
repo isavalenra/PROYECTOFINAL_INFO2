@@ -1,12 +1,14 @@
 import sys 
 import os
-from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox, QLineEdit, QPushButton, QTableWidgetItem
+from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox, QLineEdit, QPushButton, QTableWidgetItem, QVBoxLayout, QFileDialog
 from PyQt5.QtGui import QRegExpValidator, QIntValidator
 from PyQt5.QtCore import Qt,QRegExp
 from PyQt5.uic import loadUi
 from PyQt5.uic import loadUi
 import json
 from main import* 
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 
 class Ventanainicio(QMainWindow):
@@ -44,12 +46,35 @@ class Ventanainicio(QMainWindow):
     def closeOption(self):
         self.close()
 
+
+class MatplotlibCanvas(FigureCanvas):
+    def __init__(self, parent=None):
+        fig = Figure()
+        self.ax = fig.add_subplot(111)
+        super().__init__(fig)
+        self.setParent(parent)
+
+    def plot_signal(self, signal):
+        self.ax.clear()
+        self.ax.plot(signal)
+        self.ax.set_title('Signal from .mat file')
+        self.ax.set_xlabel('Samples')
+        self.ax.set_ylabel('Amplitude')
+        self.draw()
+
+
 class VentaMenu(QDialog):
     def __init__(self):
         super().__init__()
         loadUi("ventana resultado.ui",self)
         self.vetController =Coordinador()
         self.setup()
+
+        self.canvas = MatplotlibCanvas(self.contenedor_senal)
+        layout = QVBoxLayout(self.contenedor_senal)
+        layout.addWidget(self.canvas)
+
+
         
     def setup(self):
         self.boton_agregar.clicked.connect(self.abrir_ventana_agregar)
@@ -61,6 +86,15 @@ class VentaMenu(QDialog):
         self.boton_buscar.clicked.connect(self.buscar_paciente)
         self.boton_conteo.clicked.connect(self.abrir_ventana_conteo)
         self.boton_senal.clicked.connect(self.abrir_ventana_senal)
+        self.boton_cargar.clicked.connect(self.procesar_senal)
+
+    def procesar_senal(self):
+        cedula = self.guardar_cedula.text()
+        signal = self.vetController.procesar_senal(cedula)
+        if signal is not None:
+            self.canvas.plot_signal(signal)
+
+
 
     def abrir_ventana_menu(self):
         ventana_menu=self.stackedWidget.setCurrentIndex(0)
@@ -79,7 +113,7 @@ class VentaMenu(QDialog):
         ventana_conteo = self.stackedWidget_2.setCurrentIndex(0)
     def abrir_ventana_senal(self):
         ventana_senal = self.stackedWidget_2.setCurrentIndex(1)
-        
+
     #Metodo agregar paciente 
     def agregar_pac(self):    
         nombre = self.nombre.text()
@@ -167,6 +201,8 @@ class VentaMenu(QDialog):
 
         except Exception as e:
             print(f"Error al buscar el paciente: {e}")
+
+
 
 
 

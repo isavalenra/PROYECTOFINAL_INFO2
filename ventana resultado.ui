@@ -109,26 +109,9 @@
             <item>
              <widget class="QStackedWidget" name="stackedWidget">
               <property name="currentIndex">
-               <number>0</number>
+               <number>2</number>
               </property>
-              <widget class="QWidget" name="page_menu">
-               <widget class="QLabel" name="label_11">
-                <property name="geometry">
-                 <rect>
-                  <x>-10</x>
-                  <y>-10</y>
-                  <width>581</width>
-                  <height>541</height>
-                 </rect>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap>Carnet de identificación hospital ilustrado con fotografía azul .png</pixmap>
-                </property>
-               </widget>
-              </widget>
+              <widget class="QWidget" name="page_menu"/>
               <widget class="QWidget" name="pag_agregar">
                <property name="styleSheet">
                 <string notr="true">background-color: rgb(255, 170, 255);</string>
@@ -281,15 +264,100 @@
                   <property name="frameShadow">
                    <enum>QFrame::Raised</enum>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_3">
-                   <item>
-                    <widget class="QTableWidget" name="tableWidget">
-                     <property name="styleSheet">
-                      <string notr="true">background-color: rgb(255, 255, 255);</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <widget class="QTableWidget" name="tableWidget">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>10</y>
+                     <width>526</width>
+                     <height>71</height>
+                    </rect>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: rgb(255, 255, 255);</string>
+                   </property>
+                   <column>
+                    <property name="text">
+                     <string>nombre</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Nueva columna</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>edad</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>peso</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>estatura</string>
+                    </property>
+                   </column>
+                  </widget>
+                  <widget class="QTableWidget" name="tableWidget_2">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>92</y>
+                     <width>526</width>
+                     <height>181</height>
+                    </rect>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: rgb(255, 255, 255);</string>
+                   </property>
+                   <column>
+                    <property name="text">
+                     <string>temperatura</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Nueva columna</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>oxigeno</string>
+                    </property>
+                   </column>
+                  </widget>
+                  <widget class="QTableWidget" name="tableWidget_3">
+                   <property name="geometry">
+                    <rect>
+                     <x>10</x>
+                     <y>276</y>
+                     <width>526</width>
+                     <height>101</height>
+                    </rect>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: rgb(255, 255, 255);</string>
+                   </property>
+                   <column>
+                    <property name="text">
+                     <string>promedion temperatura</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>moda oxigenacion</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>desviacion frecuencia</string>
+                    </property>
+                   </column>
+                  </widget>
                  </widget>
                 </item>
                </layout>

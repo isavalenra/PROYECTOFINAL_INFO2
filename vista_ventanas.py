@@ -30,10 +30,10 @@ class Ventanainicio(QMainWindow):
         verificar = self.coordinador.log_in(username,password)
 
         if isinstance(verificar, tuple):
-            self.vetView = Vista()
+            self.vetView = VentaMenu()
             self.vetView.show()
             self.close()
-        elif existe == 0:
+        elif verificar == 0:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
             msgBox.setText("No existe un usuario con los \ndatos proporcionados")
@@ -46,6 +46,7 @@ class Ventanainicio(QMainWindow):
 
 class VentaMenu(QDialog):
     def __init__(self):
+        super().__init__()
         loadUi("ventana resultado.ui",self)
         self.vetController =Coordinador()
         self.setup()
@@ -57,26 +58,21 @@ class VentaMenu(QDialog):
         self.boton_salir.clicked.connect(self.abrir_ventana_salir)
         self.boton_menu.clicked.connect(self.abrir_ventana_menu)
         self.Bagregar_pac.clicked.connect(self.agregar_pac)
+        self.boton_buscar.clicked.connect(self.buscar_paciente)
         
-        self.tabla()
     
     def abrir_ventana_menu(self):
         ventana_menu=self.stackedWidget.setCurrentIndex(0)
-
     def abrir_ventana_agregar(self):
         ventana_agregar=self.stackedWidget.setCurrentIndex(1)   
-
     def abrir_ventana_Cdatos(self):
         ventana_Cdatos=self.stackedWidget.setCurrentIndex(2)
-        
     def abrir_ventana_Cestudios(self):
-        ventana_Cestudios= self.stackedWidget.setCurrentIndex(3) 
-        
+        ventana_Cestudios= self.stackedWidget.setCurrentIndex(3)      
     def abrir_ventana_salir(self):
-        self.ventanaL=ventanaLogin()
+        self.ventanaL=Ventanainicio()
         self.ventanaL.show()
         self.close()
-    
     def agregar_pac(self):
         nombre = self.nombre.text()
         iden = self.id.text()        
@@ -95,20 +91,87 @@ class VentaMenu(QDialog):
             msgBox.setStandardButtons(QMessageBox.Ok)
             msgBox.exec()
         else:
-            isUnique = self.vetController.agregaPac(nombre,)
+            isUnique = self.vetController.agregaPac(nombre,iden,edad,peso,estatura,url_I,url_S,url_signos)
             self.abrir_ventana_menu()
             if not isUnique:
                 msgBox = QMessageBox()
                 msgBox.setIcon(QMessageBox.Warning)
-                msgBox.setText("La id ya existe")
-                msgBox.setWindowTitle('Id repetida')
+                msgBox.setText("Paciente agregadp")
+                msgBox.setWindowTitle('Paciente')
                 msgBox.setStandardButtons(QMessageBox.Ok)
                 msgBox.exec()
+        
+    def buscar_paciente(self):
+        id_b=self.verificar_id.text()
+        if not id :
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setText("Debe ingresar todos los datos")
+            msgBox.setWindowTitle('Datos faltantes')
+            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.exec()
+        else:
+            resultado= self.vetController.buscarPac(id_b)
+            iden,nombre,edad,peso,estatura=resultado
+            variables=[nombre,iden,edad,peso,estatura]
+            self.tableWidget.setRowCount(1)  # Solo una fila para los valores
+            self.tableWidget.setColumnCount(len(variables))  # Una columna por variable
+            # Llena la tabla con los datos de las variables
+            for col_num, value in enumerate(variables):
+                self.tableWidget.setItem(0, col_num, QTableWidgetItem(str(value)))
+
+            # Si quieres asegurarte de que los encabezados están correctos:
+            self.tableWidget.setHorizontalHeaderLabels(["nombre", "ID", "edad", "peso", "estatura"])
+
+        try:
+            resultado= self.vetController.procesarCsv(id_b)   #datos_pac es una lista
+            if resultado is not None:
+                promedio, moda, desviacion, datos_pac = resultado
+                temperatura=datos_pac[0]
+                oxigeno=datos_pac[1]
+                frecuencia=datos_pac[2]
+                # Configurar el número de filas y columnas una vez fuera del bucle
+                self.tableWidget_2.setRowCount(len(temperatura))  
+                self.tableWidget_2.setColumnCount(3)  # Tres columnas: temperatura, oxigeno, frecuencia
+
+                # Llena la tabla con los datos de las variables
+                for i in range(len(temperatura)):
+                    t = temperatura[i]
+                    o = oxigeno[i]
+                    f = frecuencia[i]
+                    lista = [t, o, f]
+
+                    for col_num, value in enumerate(lista):
+                        self.tableWidget_2.setItem(i, col_num, QTableWidgetItem(str(value)))
+
+                # Si quieres asegurarte de que los encabezados están correctos:
+                self.tableWidget_2.setHorizontalHeaderLabels(["Temperatura", "Oxigeno", "Frecuencia"])
+
+                lista_calculos=[promedio,moda,desviacion]
+                self.tableWidget_3.setRowCount(1)  # Solo una fila para los valores
+                self.tableWidget_3.setColumnCount(len(lista_calculos))  # Una columna por variable
+                # Llena la tabla con los datos de las variables
+                for col_num, value in enumerate(lista_calculos):
+                    self.tableWidget_3.setItem(0, col_num, QTableWidgetItem(str(value)))
+
+                # Si quieres asegurarte de que los encabezados están correctos:
+                self.tableWidget_3.setHorizontalHeaderLabels(["promedion temperatura", "moda oxigenacion", "desviacion frecuencia"])
+
+        except Exception as e:
+            print(f"Error al buscar el paciente: {e}")
+
+
+    
 
 
 
 
-# app=QApplication(sys.argv)
-# mi_vista2=Ventanainicio()
-# mi_vista2.show()
-# sys.exit(app.exec())
+          
+
+
+
+
+app=QApplication(sys.argv)
+mi_vista2=Ventanainicio()
+mi_vista2.show()
+sys.exit(app.exec())

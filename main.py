@@ -8,10 +8,16 @@ class login_controlador:
         return result
 class Coordinador():
     def __init__(self):
-        self.__mi_modelo = sistema()
+        self.mi_modelo = sistema()
     
     def agregaPac(self, n, c, ed, pe, es, i, s, t):
-        return self.__mi_modelo.asignar_paciente( n, c, ed, pe, es, i, s, t)
+        return self.mi_modelo.asignar_paciente( n, c, ed, pe, es, i, s, t)
+    
+    def buscarPac(self,cedula):
+        return self.mi_modelo.obtener_datos_paciente(cedula)
+    
+    def procesarCsv(self,cedula):
+        return self.mi_modelo.procesar_csv(cedula)
 
 
 

@@ -9,6 +9,7 @@ import json
 from main import* 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import numpy as np
 
 
 class Ventanainicio(QMainWindow):
@@ -90,7 +91,12 @@ class VentaMenu(QDialog):
 
     def procesar_senal(self):
         cedula = self.guardar_cedula.text()
-        signal = self.vetController.procesar_senal(cedula)
+        min = int(0)
+        max = int(20)
+        print(min)
+        print(max)
+        signal = self.vetController.procesar_senal(cedula,min,max)
+        #signal = np.arange(1,21)
         if signal is not None:
             self.canvas.plot_signal(signal)
 

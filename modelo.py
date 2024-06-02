@@ -280,11 +280,11 @@ class sistema:
         return promedio_col1, moda_col2, desviacion_col3, signosvit
     
     #Metodo procesamiento de la señal 
-    def procesar_senal(self , cedula):
+    def procesar_senal(self, cedula, min, max):
         if not self.conexion:
             print("No hay conexión a la base de datos")
             return
-        
+
         self.cursor = self.conexion.cursor() # Se inicializa el cursor
         query_url = "SELECT url_señal FROM Paciente WHERE id = ?"
         self.cursor.execute(query_url, (cedula,))
@@ -292,14 +292,23 @@ class sistema:
         url_s = result[0]  # Obtener la URL de la señal desde el resultado
         try:
             mat_contents = sio.loadmat(url_s)
-            matriz = mat_contents['data']  #Se usa con documento C001R_EP_reposo.mat 
+            matriz = mat_contents['data']  # Se usa con documento C001R_EP_reposo.mat 
             c, p, e = np.shape(matriz)
-            self.senal_continua = np.reshape(matriz, (c, p*e), order='F') # matriz en 2D
-            return self.senal_continua
+            primeros_3_canales = matriz[:3, :, :]
+            self.senal_continua = np.reshape(primeros_3_canales, (p, 3*e), order='F') # matriz en 2D
+            
+            if min is not None and max is not None:
+                if min < 0 or max > len(self.senal_continua):
+                    print(len(self.senal_continua))
+                    print("Los valores de min y max están fuera del rango de la señal.")
+                    return None
+                else:
+                    return self.senal_continua[min:max]
+            else:
+                return self.senal_continua
         except Exception as e:
             print("Error al procesar la señal:", e)
             return None
-        
         #Forma de graficacion
         # s=sistema()
         # d=50

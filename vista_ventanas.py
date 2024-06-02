@@ -97,6 +97,13 @@ class VentaMenu(QDialog):
         else:
             isUnique = self.vetController.agregaPac(nombre,)
             self.abrir_ventana_menu()
+            if not isUnique:
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Warning)
+                msgBox.setText("La id ya existe")
+                msgBox.setWindowTitle('Id repetida')
+                msgBox.setStandardButtons(QMessageBox.Ok)
+                msgBox.exec()
 
 
 

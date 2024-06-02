@@ -73,7 +73,8 @@ class VentaMenu(QDialog):
         self.ventanaL=Ventanainicio()
         self.ventanaL.show()
         self.close()
-    def agregar_pac(self):
+    #Metodo agregar paciente 
+    def agregar_pac(self):    
         nombre = self.nombre.text()
         iden = self.id.text()        
         edad = self.edad.text()
@@ -100,7 +101,7 @@ class VentaMenu(QDialog):
                 msgBox.setWindowTitle('Paciente')
                 msgBox.setStandardButtons(QMessageBox.Ok)
                 msgBox.exec()
-        
+    #Metodo buscar pacientes 
     def buscar_paciente(self):
         id_b=self.verificar_id.text()
         if not id :
@@ -161,17 +162,12 @@ class VentaMenu(QDialog):
             print(f"Error al buscar el paciente: {e}")
 
 
-    
 
+def main():
+    app=QApplication(sys.argv)
+    mi_vista2=Ventanainicio()
+    mi_vista2.show()
+    sys.exit(app.exec())
 
-
-
-          
-
-
-
-
-app=QApplication(sys.argv)
-mi_vista2=Ventanainicio()
-mi_vista2.show()
-sys.exit(app.exec())
+if __name__ == '__main__':
+    main()

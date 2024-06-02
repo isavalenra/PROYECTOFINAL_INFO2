@@ -59,6 +59,8 @@ class VentaMenu(QDialog):
         self.boton_menu.clicked.connect(self.abrir_ventana_menu)
         self.Bagregar_pac.clicked.connect(self.agregar_pac)
         self.boton_buscar.clicked.connect(self.buscar_paciente)
+        self.boton_conteo.clicked.connect(self.abrir_ventana_conteo)
+        self.boton_senal.clicked.connect(self.abrir_ventana_senal)
 
     def abrir_ventana_menu(self):
         ventana_menu=self.stackedWidget.setCurrentIndex(0)
@@ -72,6 +74,12 @@ class VentaMenu(QDialog):
         self.ventanaL=Ventanainicio()
         self.ventanaL.show()
         self.close()
+
+    def abrir_ventana_conteo(self):
+        ventana_conteo = self.stackedWidget_2.setCurrentIndex(0)
+    def abrir_ventana_senal(self):
+        ventana_senal = self.stackedWidget_2.setCurrentIndex(1)
+        
     #Metodo agregar paciente 
     def agregar_pac(self):    
         nombre = self.nombre.text()

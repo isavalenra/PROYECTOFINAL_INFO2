@@ -58,7 +58,7 @@ class MatplotlibCanvas(FigureCanvas):
     def plot_signal(self, signal):
         self.ax.clear()
         self.ax.plot(signal)
-        self.ax.set_title('Signal from .mat file')
+        self.ax.set_title('Señal del archivo Mat')
         self.ax.set_xlabel('Samples')
         self.ax.set_ylabel('Amplitude')
         self.draw()
@@ -70,6 +70,9 @@ class VentaMenu(QDialog):
         loadUi("ventana resultado.ui",self)
         self.vetController =Coordinador()
         self.setup()
+
+        self.min = 0
+        self.max = 20
 
         self.canvas = MatplotlibCanvas(self.contenedor_senal)
         layout = QVBoxLayout(self.contenedor_senal)
@@ -88,17 +91,28 @@ class VentaMenu(QDialog):
         self.boton_conteo.clicked.connect(self.abrir_ventana_conteo)
         self.boton_senal.clicked.connect(self.abrir_ventana_senal)
         self.boton_cargar.clicked.connect(self.procesar_senal)
+        self.boton_adelante.clicked.connect(self.adelantar_senal)
+        self.boton_atras.clicked.connect(self.atrasar_senal)
 
     def procesar_senal(self):
         cedula = self.guardar_cedula.text()
-        min = int(0)
-        max = int(20)
-        print(min)
-        print(max)
-        signal = self.vetController.procesar_senal(cedula,min,max)
+        print(self.min)
+        print(self.max)
+        signal = self.vetController.procesar_senal(cedula,self.min,self.max)
         #signal = np.arange(1,21)
         if signal is not None:
             self.canvas.plot_signal(signal)
+
+    def adelantar_senal(self):
+        self.min += 20
+        self.max += 20
+        self.procesar_senal()
+
+    def atrasar_senal(self):
+        self.min = max(0, self.min - 20)  
+        self.max = max(20, self.max - 20)  
+        self.procesar_senal()
+        
 
 
 

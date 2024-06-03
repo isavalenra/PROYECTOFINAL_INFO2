@@ -103,6 +103,7 @@ class VentaMenu(QDialog):
         self.boton_cargar.clicked.connect(self.procesar_senal)
         self.boton_adelante.clicked.connect(self.adelantar_senal)
         self.boton_atras.clicked.connect(self.atrasar_senal)
+        self.cargar_img.clicked.connect(self.procesar_img)
         self.url_imagen.clicked.connect(self.cargar_img_archivo)
         self.url_senal.clicked.connect(self.cargar_senal_archivo)
         self.url_signos.clicked.connect(self.cargar_signos_archivo)
@@ -142,9 +143,11 @@ class VentaMenu(QDialog):
         # Verificar y convertir la profundidad de la imagen si es necesario
         if img.dtype != np.uint8:
             img = cv2.convertScaleAbs(img)
+
+        img = cv2.applyColorMap(img, cv2.COLORMAP_JET)
     
         # Convertir la imgn de BGR a RGB
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
         # Convertir la imgn a formato QImage
         height, width, channel = img.shape

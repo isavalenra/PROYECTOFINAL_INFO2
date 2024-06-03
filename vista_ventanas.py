@@ -55,10 +55,11 @@ class MatplotlibCanvas(FigureCanvas):
         super().__init__(fig)
         self.setParent(parent)
 
-    def plot_signal(self, signal):
+    def plot_signals(self, t, signals,min,max):
         self.ax.clear()
-        self.ax.plot(signal)
-        self.ax.set_title('Señal del archivo Mat')
+        for c in range(8):
+            self.ax.plot(t, signals[c,min:max]+10*c)
+        self.ax.set_title('Señales del archivo Mat')
         self.ax.set_xlabel('Samples')
         self.ax.set_ylabel('Amplitude')
         self.draw()
@@ -112,9 +113,11 @@ class VentaMenu(QDialog):
         cedula = self.verificar_id.text()
         print(self.min)
         print(self.max)
-        signal = self.vetController.procesar_senal(cedula,self.min,self.max)
-        if signal is not None:
-            self.canvas.plot_signal(signal)
+        t=np.linspace(self.min,self.max,self.max-self.min)
+        signals = self.vetController.procesar_senal(cedula,self.min,self.max)
+        if signals is not None:
+            self.canvas.plot_signals(t, signals,self.min,self.max)
+            
         """"
         if signal is not None:
             y_min, y_max = min(signal), max(signal)

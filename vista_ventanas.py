@@ -103,7 +103,9 @@ class VentaMenu(QDialog):
         self.boton_cargar.clicked.connect(self.procesar_senal)
         self.boton_adelante.clicked.connect(self.adelantar_senal)
         self.boton_atras.clicked.connect(self.atrasar_senal)
-        self.cargar_img.clicked.connect(self.procesar_img)
+        self.url_imagen.clicked.connect(self.cargar_img_archivo)
+        self.url_senal.clicked.connect(self.cargar_senal_archivo)
+        self.url_signos.clicked.connect(self.cargar_signos_archivo)
 
     def procesar_senal(self):
         cedula = self.verificar_id.text()
@@ -159,17 +161,33 @@ class VentaMenu(QDialog):
         #layout.addWidget(img_label)
         #self.setLayout(layout)
         
+    def cargar_img_archivo(self):
+        filename, _ = QFileDialog.getOpenFileName(self, "Seleccionar imagen", "", "Image Files (*.png *.jpg *.bmp)")
+        if filename:
+            self.url_imagen.setText(filename)
 
+    def cargar_senal_archivo(self):
+        filename, _ = QFileDialog.getOpenFileName(self, "Seleccionar archivo de señal", "", "MAT Files (*.mat)")
+        if filename:
+            self.url_senal.setText(filename)
 
+    def cargar_signos_archivo(self):
+        filename, _ = QFileDialog.getOpenFileName(self, "Seleccionar archivo de signos vitales", "", "CSV Files (*.csv)")
+        if filename:
+            self.url_signos.setText(filename)
 
     def abrir_ventana_menu(self):
         ventana_menu=self.stackedWidget.setCurrentIndex(0)
+
     def abrir_ventana_agregar(self):
         ventana_agregar=self.stackedWidget.setCurrentIndex(1)   
+
     def abrir_ventana_Cdatos(self):
         ventana_Cdatos=self.stackedWidget.setCurrentIndex(2)
+
     def abrir_ventana_Cestudios(self):
         ventana_Cestudios= self.stackedWidget.setCurrentIndex(3)      
+
     def abrir_ventana_salir(self):
         self.ventanaL=Ventanainicio()
         self.ventanaL.show()
@@ -177,17 +195,18 @@ class VentaMenu(QDialog):
 
     def abrir_ventana_conteo(self):
         ventana_conteo = self.stackedWidget_2.setCurrentIndex(0)
+
     def abrir_ventana_senal(self):
         ventana_senal = self.stackedWidget_2.setCurrentIndex(1)
 
-    #Metodo agregar paciente 
+    # Método agregar paciente 
     def agregar_pac(self):    
         nombre = self.nombre.text()
         iden = self.id.text()        
         edad = self.edad.text()
         peso = self.peso.text()
         estatura = self.estatura.text()
-        url_I = self.url_imgn.text()
+        url_I = self.url_imagen.text()
         url_S = self.url_senal.text()
         url_signos = self.url_signos.text()
         
@@ -208,10 +227,11 @@ class VentaMenu(QDialog):
                 msgBox.setWindowTitle('Paciente')
                 msgBox.setStandardButtons(QMessageBox.Ok)
                 msgBox.exec()
-    #Metodo buscar pacientes 
+
+    # Método buscar pacientes 
     def buscar_paciente(self):
         id_b=self.verificar_id.text()
-        if not id :
+        if not id_b:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Warning)
             msgBox.setText("Debe ingresar todos los datos")
@@ -267,10 +287,6 @@ class VentaMenu(QDialog):
 
         except Exception as e:
             print(f"Error al buscar el paciente: {e}")
-
-
-
-
 
 def main():
     app=QApplication(sys.argv)

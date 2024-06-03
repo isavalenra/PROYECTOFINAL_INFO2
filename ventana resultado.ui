@@ -109,7 +109,7 @@
             <item>
              <widget class="QStackedWidget" name="stackedWidget">
               <property name="currentIndex">
-               <number>3</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="page_menu"/>
               <widget class="QWidget" name="pag_agregar">
@@ -197,15 +197,6 @@
                  <item row="4" column="1">
                   <widget class="QLineEdit" name="estatura"/>
                  </item>
-                 <item row="5" column="1">
-                  <widget class="QLineEdit" name="url_imagen"/>
-                 </item>
-                 <item row="6" column="1">
-                  <widget class="QLineEdit" name="url_senal"/>
-                 </item>
-                 <item row="7" column="1">
-                  <widget class="QLineEdit" name="url_signos"/>
-                 </item>
                  <item row="8" column="1">
                   <widget class="QPushButton" name="Bagregar_pac">
                    <property name="styleSheet">
@@ -213,6 +204,27 @@
                    </property>
                    <property name="text">
                     <string>Agregar</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QPushButton" name="url_imagen">
+                   <property name="text">
+                    <string>Cargar archivo</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1">
+                  <widget class="QPushButton" name="url_senal">
+                   <property name="text">
+                    <string>Cargar archivo</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QPushButton" name="url_signos">
+                   <property name="text">
+                    <string>Cargar archivo</string>
                    </property>
                   </widget>
                  </item>
@@ -440,7 +452,7 @@
                         <string/>
                        </property>
                       </widget>
-                      <widget class="QWidget" name="">
+                      <widget class="QWidget" name="layoutWidget">
                        <property name="geometry">
                         <rect>
                          <x>160</x>

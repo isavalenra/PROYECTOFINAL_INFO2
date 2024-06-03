@@ -170,66 +170,62 @@ class sistema:
             return None
 
     # Método para contar células en una imagen
+
     def contar_celulas(self, cedula):
         if not self.conexion:
             print("No hay conexión a la base de datos")
             return
         
-        self.cursor = self.conexion.cursor() # Se inicializa el cursor
+        self.cursor = self.conexion.cursor()
 
-        # Obtener la URL de la imagen del paciente desde la base de datos
         query_url = "SELECT url_imagen FROM Paciente WHERE id = ?"
         self.cursor.execute(query_url, (cedula,))
         result = self.cursor.fetchone()
         if result is None:
             print(f"Paciente con la cédula {cedula} no encontrado en la base de datos")
-            self.cursor.close() # Se cierra el cursor
+            self.cursor.close()
             return
 
         url_imagen = result[0]
         print(f"Ruta de la imagen: {url_imagen}")
 
-        # Cargar y procesar la imagen
         img = cv2.imread(url_imagen)
         if img is None:
             print(f"No se pudo cargar la imagen en la ruta: {url_imagen}")
-            self.cursor.close() # Se cierra el cursor
+            self.cursor.close()
             return
         
-        self.cursor.close() # Se cierra el cursor
+        self.cursor.close()
 
-        plt.subplot(3, 2, 1)
-        plt.title('Imagen sin transformación')
-        plt.axis('off')
-        #plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        self.figure = plt.figure(figsize=(10, 8))  # Asigna la figura a self.figure
 
         # Convertir a escala de grises y aplicar umbral
+        ax2 = self.figure.add_subplot(2, 1, 1)  # Gráfica para la imagen binaria
+        ax2.set_title('Imagen binaria')
+        ax2.axis('off')
         imapB = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         _, imapB = cv2.threshold(imapB, 127, 255, cv2.THRESH_BINARY)
-        plt.subplot(3, 2, 2)
-        plt.title('Imagen binaria')
-        plt.axis('off')
-        #plt.imshow(imapB, cmap='gray', vmin=0, vmax=255)
-        
-        # Apertura, dilatación y erosión
+        ax2.imshow(imapB, cmap='gray', vmin=0, vmax=255)
+
+        # Contar células
+        ax3 = self.figure.add_subplot(2, 1, 2)  # Gráfica para el conteo de células
+        ax3.set_title('Conteo de células')
+        ax3.axis('off')
         kernel = np.ones((5, 5), np.uint8)
-        imapB = cv2.morphologyEx(imapB, cv2.MORPH_OPEN, kernel) 
+        imapB = cv2.morphologyEx(imapB, cv2.MORPH_OPEN, kernel)
         ima2 = cv2.dilate(imapB, kernel, iterations=2)
         ima2 = cv2.erode(ima2, kernel, iterations=2)
         num_cells, labeled_image = cv2.connectedComponents(ima2)
 
         # Imprimir el número de células
-        celulas = num_cells -1
+        celulas = num_cells - 1
         print("Número de células encontradas:", celulas)  # Restamos 1 para excluir el fondo
 
         # Graficar el resultado
-        plt.subplot(3, 2, 3)
-        #plt.imshow(labeled_image, cmap='jet')  # Usamos 'jet' colormap para visualizar las etiquetas
-        plt.title('Imagen con células etiquetadas')
-        plt.axis('off')
-        #plt.show()
-        return celulas,labeled_image
-    
+        ax3.imshow(labeled_image, cmap='jet')  # Usamos 'jet' colormap para visualizar las etiquetas
+        
+        return self.figure, celulas
+
     # Método para procesar archivo CSV
     def procesar_csv(self, cedula):
         if not self.conexion:
@@ -343,9 +339,6 @@ class sistema:
     #Metodo para promedio de la señal 
     def promedio(self,c,xmax,xmin):
         return np.mean(self.senal_continua[c, xmin:xmax],0)
-
-
-
 
 
 

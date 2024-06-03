@@ -408,12 +408,64 @@
                       <string notr="true">background-color: rgb(170, 170, 255);</string>
                      </property>
                      <property name="currentIndex">
-                      <number>1</number>
+                      <number>0</number>
                      </property>
                      <widget class="QWidget" name="pagina_conteo">
                       <property name="styleSheet">
                        <string notr="true">background-color: rgb(255, 170, 255);</string>
                       </property>
+                      <widget class="QPushButton" name="cargar_img">
+                       <property name="geometry">
+                        <rect>
+                         <x>214</x>
+                         <y>0</y>
+                         <width>81</width>
+                         <height>23</height>
+                        </rect>
+                       </property>
+                       <property name="text">
+                        <string>Cargar Imágen</string>
+                       </property>
+                      </widget>
+                      <widget class="QLabel" name="img_label">
+                       <property name="geometry">
+                        <rect>
+                         <x>6</x>
+                         <y>22</y>
+                         <width>521</width>
+                         <height>321</height>
+                        </rect>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                      <widget class="QWidget" name="">
+                       <property name="geometry">
+                        <rect>
+                         <x>160</x>
+                         <y>360</y>
+                         <width>191</width>
+                         <height>20</height>
+                        </rect>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_15">
+                        <item>
+                         <widget class="QLabel" name="label_12">
+                          <property name="text">
+                           <string>Conteo de células:</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="conteo_celulas">
+                          <property name="text">
+                           <string>TextLabel</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </widget>
                      </widget>
                      <widget class="QWidget" name="pag_senal">
                       <widget class="QFrame" name="frame_5">
@@ -437,10 +489,10 @@
                        <widget class="QWidget" name="contenedor_senal" native="true">
                         <property name="geometry">
                          <rect>
-                          <x>-1</x>
-                          <y>-1</y>
-                          <width>501</width>
-                          <height>301</height>
+                          <x>-11</x>
+                          <y>-21</y>
+                          <width>521</width>
+                          <height>331</height>
                          </rect>
                         </property>
                        </widget>
@@ -449,7 +501,7 @@
                        <property name="geometry">
                         <rect>
                          <x>30</x>
-                         <y>39</y>
+                         <y>10</y>
                          <width>451</width>
                          <height>51</height>
                         </rect>
@@ -475,28 +527,6 @@
                            <string>--&gt;</string>
                           </property>
                          </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                      <widget class="QWidget" name="horizontalLayoutWidget">
-                       <property name="geometry">
-                        <rect>
-                         <x>29</x>
-                         <y>10</y>
-                         <width>451</width>
-                         <height>25</height>
-                        </rect>
-                       </property>
-                       <layout class="QHBoxLayout" name="horizontalLayout_8">
-                        <item>
-                         <widget class="QLabel" name="label">
-                          <property name="text">
-                           <string>Cedula</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QLineEdit" name="guardar_cedula"/>
                         </item>
                        </layout>
                       </widget>

@@ -201,7 +201,7 @@ class sistema:
         plt.subplot(3, 2, 1)
         plt.title('Imagen sin transformación')
         plt.axis('off')
-        plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        #plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
 
         # Convertir a escala de grises y aplicar umbral
         imapB = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -209,7 +209,7 @@ class sistema:
         plt.subplot(3, 2, 2)
         plt.title('Imagen binaria')
         plt.axis('off')
-        plt.imshow(imapB, cmap='gray', vmin=0, vmax=255)
+        #plt.imshow(imapB, cmap='gray', vmin=0, vmax=255)
         
         # Apertura, dilatación y erosión
         kernel = np.ones((5, 5), np.uint8)
@@ -219,14 +219,16 @@ class sistema:
         num_cells, labeled_image = cv2.connectedComponents(ima2)
 
         # Imprimir el número de células
-        print("Número de células encontradas:", num_cells - 1)  # Restamos 1 para excluir el fondo
+        celulas = num_cells -1
+        print("Número de células encontradas:", celulas)  # Restamos 1 para excluir el fondo
 
         # Graficar el resultado
         plt.subplot(3, 2, 3)
-        plt.imshow(labeled_image, cmap='jet')  # Usamos 'jet' colormap para visualizar las etiquetas
+        #plt.imshow(labeled_image, cmap='jet')  # Usamos 'jet' colormap para visualizar las etiquetas
         plt.title('Imagen con células etiquetadas')
         plt.axis('off')
-        plt.show()
+        #plt.show()
+        return celulas,labeled_image
     
     # Método para procesar archivo CSV
     def procesar_csv(self, cedula):
@@ -294,8 +296,8 @@ class sistema:
             mat_contents = sio.loadmat(url_s)
             matriz = mat_contents['data']  # Se usa con documento C001R_EP_reposo.mat 
             c, p, e = np.shape(matriz)
-            primeros_3_canales = matriz[:3, :, :]
-            self.senal_continua = np.reshape(primeros_3_canales, (p, 3*e), order='F') # matriz en 2D
+            #primeros_3_canales = matriz[:3, :, :]
+            self.senal_continua = np.reshape(matriz, (p, c*e), order='F') # matriz en 2D
             
             if min is not None and max is not None:
                 if min < 0 or max > len(self.senal_continua):

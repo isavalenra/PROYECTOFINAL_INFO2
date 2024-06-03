@@ -1,7 +1,7 @@
 import sys 
 import os
-from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox, QLineEdit, QPushButton, QTableWidgetItem, QVBoxLayout, QFileDialog
-from PyQt5.QtGui import QRegExpValidator, QIntValidator
+from PyQt5.QtWidgets import QDialog, QApplication, QMessageBox, QLineEdit, QPushButton, QTableWidgetItem, QVBoxLayout, QFileDialog, QLabel, QWidget
+from PyQt5.QtGui import QRegExpValidator, QIntValidator, QImage, QPixmap
 from PyQt5.QtCore import Qt,QRegExp
 from PyQt5.uic import loadUi
 from PyQt5.uic import loadUi
@@ -62,7 +62,17 @@ class MatplotlibCanvas(FigureCanvas):
         self.ax.set_xlabel('Samples')
         self.ax.set_ylabel('Amplitude')
         self.draw()
-
+    """"
+    def plot_signal(self, signal, x_min, x_max, y_min, y_max):
+        self.ax.clear()
+        self.ax.plot(signal)
+        self.ax.set_title('Señal del archivo Mat')
+        self.ax.set_xlabel('Samples')
+        self.ax.set_ylabel('Amplitude')
+        self.ax.set_xlim(x_min, x_max)
+        self.ax.set_ylim(y_min, y_max)
+        self.draw()
+        """
 
 class VentaMenu(QDialog):
     def __init__(self):
@@ -93,15 +103,19 @@ class VentaMenu(QDialog):
         self.boton_cargar.clicked.connect(self.procesar_senal)
         self.boton_adelante.clicked.connect(self.adelantar_senal)
         self.boton_atras.clicked.connect(self.atrasar_senal)
+        self.cargar_img.clicked.connect(self.procesar_img)
 
     def procesar_senal(self):
-        cedula = self.guardar_cedula.text()
+        cedula = self.verificar_id.text()
         print(self.min)
         print(self.max)
         signal = self.vetController.procesar_senal(cedula,self.min,self.max)
-        #signal = np.arange(1,21)
         if signal is not None:
             self.canvas.plot_signal(signal)
+        """"
+        if signal is not None:
+            y_min, y_max = min(signal), max(signal)
+            self.canvas.plot_signal(signal, self.min, self.max, y_min, y_max)"""
 
     def adelantar_senal(self):
         self.min += 20
@@ -112,6 +126,38 @@ class VentaMenu(QDialog):
         self.min = max(0, self.min - 20)  
         self.max = max(20, self.max - 20)  
         self.procesar_senal()
+
+    def procesar_img(self):
+        cedula = self.verificar_id.text()
+        celulas,img = self.vetController.procesar_img(cedula)
+        self.conteo_celulas.setText(str(celulas))
+
+
+        if img is None:
+            print("Error al cargar la imgn")
+            return
+        
+        # Verificar y convertir la profundidad de la imagen si es necesario
+        if img.dtype != np.uint8:
+            img = cv2.convertScaleAbs(img)
+    
+        # Convertir la imgn de BGR a RGB
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # Convertir la imgn a formato QImage
+        height, width, channel = img.shape
+        bytes_per_line = 3 * width
+        q_img = QImage(img.data, width, height, bytes_per_line, QImage.Format_RGB888)
+        
+        # Crear un QLabel y poner la QImage en el QLabel
+    
+        self.img_label.setPixmap(QPixmap.fromImage(q_img))
+        self.img_label.setScaledContents(True)
+        
+        # Crear un layout y añadir el QLabel al layout
+        #layout = QVBoxLayout()
+        #layout.addWidget(img_label)
+        #self.setLayout(layout)
         
 
 
@@ -141,7 +187,7 @@ class VentaMenu(QDialog):
         edad = self.edad.text()
         peso = self.peso.text()
         estatura = self.estatura.text()
-        url_I = self.url_imagen.text()
+        url_I = self.url_imgn.text()
         url_S = self.url_senal.text()
         url_signos = self.url_signos.text()
         

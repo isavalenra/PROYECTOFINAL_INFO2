@@ -21,6 +21,9 @@ class Coordinador():
     
     def procesar_senal(self,cedula,min,max):
         return self.mi_modelo.procesar_senal(cedula,min,max)
+    
+    def procesar_img(self,cedula):
+        return self.mi_modelo.contar_celulas(cedula)
 
 
 

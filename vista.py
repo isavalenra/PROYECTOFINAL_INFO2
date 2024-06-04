@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt,QRegExp
 from PyQt5.uic import loadUi
 from PyQt5.uic import loadUi
 import json
-from main import* 
+from controlador import* 
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import numpy as np

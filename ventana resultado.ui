@@ -35,7 +35,7 @@
          <item>
           <widget class="QFrame" name="frame_menu">
            <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 170, 255);</string>
+            <string notr="true">background-color: rgb(255, 207, 250);</string>
            </property>
            <property name="frameShape">
             <enum>QFrame::StyledPanel</enum>
@@ -108,10 +108,30 @@
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
              <widget class="QStackedWidget" name="stackedWidget">
-              <property name="currentIndex">
-               <number>1</number>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 207, 250);</string>
               </property>
-              <widget class="QWidget" name="page_menu"/>
+              <property name="currentIndex">
+               <number>3</number>
+              </property>
+              <widget class="QWidget" name="page_menu">
+               <widget class="QLabel" name="label">
+                <property name="geometry">
+                 <rect>
+                  <x>-10</x>
+                  <y>-10</y>
+                  <width>571</width>
+                  <height>511</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="pixmap">
+                 <pixmap>Carnet de identificación hospital ilustrado con fotografía azul .png</pixmap>
+                </property>
+               </widget>
+              </widget>
               <widget class="QWidget" name="pag_agregar">
                <property name="styleSheet">
                 <string notr="true">background-color: rgb(255, 170, 255);</string>
@@ -420,7 +440,7 @@
                       <string notr="true">background-color: rgb(170, 170, 255);</string>
                      </property>
                      <property name="currentIndex">
-                      <number>0</number>
+                      <number>1</number>
                      </property>
                      <widget class="QWidget" name="pagina_conteo">
                       <property name="styleSheet">
